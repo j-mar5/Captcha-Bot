@@ -40,18 +40,20 @@ class SetupCog(commands.Cog, name="setup command"):
                 else:
                     try:
                         loading = await ctx.channel.send(self.bot.translate.msg(ctx.guild.id, "setup", "CREATION_OF_CAPTCHA_PRETECTION"))
-                        logger.debug('Beginning captcha setup')
+                        logger.info('Beginning captcha setup')
                         # Data
                         data = getConfig(ctx.guild.id)
                         # Create role
-                        logger.debug('Creating the temporary role to be applied to new users')
+                        logger.info('Creating the temporary role to be applied to new users')
                         temporaryRole = await ctx.guild.create_role(name="untested")
+                        logger.info("...success!")
 
                         # Hide all channels
-                        logger.debug('Hiding all channels from the temporary role')
+                        logger.info('Hiding all channels from the temporary role')
                         for channel in ctx.guild.channels:
+                            logger.debug(f'Starting to override the permissions for {channel}. Is TextChannel? {isinstance(channel, discord.TextChannel)} Is VoiceChannel? {isinstance(channel, discord.VoiceChannel)}')
                             if isinstance(channel, discord.TextChannel):
-
+                                
                                 perms = channel.overwrites_for(temporaryRole)
                                 perms.read_messages=False
                                 await channel.set_permissions(temporaryRole, overwrite=perms)

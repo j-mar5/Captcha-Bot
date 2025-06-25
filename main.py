@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
 @bot.event
 async def on_ready():
-    logger.info(f'Logged in as {bot.user}')
+    logger.success(f'Logged in as {bot.user}')
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name =f"?help"))
 
 # ------------------------ RUN ------------------------ # 
@@ -41,5 +41,5 @@ with open("config.json", "r") as config:
                 "name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{" \
                 "message}</level> "
     logger.remove()
-    logger.add(sys.stdout, format=logger_format, level="DEBUG" if data["debug"] else "INFO", enqueue=True, colorize=True)
+    logger.add(sys.stdout, format=logger_format, level="DEBUG" if data["debug"] else "SUCCESS", enqueue=True, colorize=True)
 bot.run(token) 
