@@ -3,9 +3,7 @@ import json
 import aiohttp
 from discord.ext import commands
 from datetime import datetime
-from nude import Nude
 from io import BytesIO
-from profanity_check import predict
 from Tools.utils import getConfig
 from Tools.logMessage import sendLogMessage
 
@@ -25,45 +23,7 @@ class OnMessageCog(commands.Cog, name="on message"):
 
         if message.content == "" and len(message.attachments) == 0:
             return
-
-        # Nudity check     
-        if (message.channel.nsfw is not True) and (len(message.attachments) > 0):
-            # Used : https://github.com/hhatto/nude.py
-            # Other option : https://github.com/notAI-tech/NudeNet (untested)
-            for i in message.attachments:
-                # Check if the attachment is an image
-                if i.filename.endswith((".png", ".jpg", ".jpeg")):
-                    
-                    # Data
-                    data = getConfig(message.guild.id)
-                    antiNudity = data["antiNudity"]
-
-                    if antiNudity is True:  
-                        logChannel = data["logChannel"]
-
-                        # Get the image
-                        async with aiohttp.ClientSession() as session:
-                            async with session.get(i.url) as response:
-                                image_bytes = await response.read()
-                        
-                        # Convert the image to io
-                        image_bytes = BytesIO(image_bytes)
-                        
-                        # Check the image
-                        n = Nude(image_bytes)
-                        n.parse()
-                        
-                        if n.result is True:
-                            # Logs
-                            i.filename = f"SPOILER_{i.filename}"
-                            spoiler = await i.to_file()
-                            embed = discord.Embed(title = self.bot.translate.msg(message.guild.id, "onMessage", "USER_HAS_SENT_NUDITY").format(message.author), description = self.bot.translate.msg(message.guild.id, "onMessage", "USER_HAS_SENT_NUDITY_DESCRIPTION").format(message.channel.mention, message.author, message.author.id), color = 0xff0000)
-                            await sendLogMessage(self, event=message, channel=logChannel, embed=embed, messageFile=spoiler)
-                            
-                            # Delete
-                            await message.delete()
-                            await message.channel.send(self.bot.translate.msg(message.guild.id, "onMessage", "DO_NOT_SEND_NUDITY").format(message.author.mention))
-        
+               
         # Data
         data = getConfig(message.guild.id)
         antiProfanity =  data["antiProfanity"]
@@ -71,19 +31,6 @@ class OnMessageCog(commands.Cog, name="on message"):
         allowSpam = data["allowSpam"]
         logChannel = data["logChannel"]
 
-        # Anti profanity
-        if antiProfanity is True:
-            words = []
-            words.append(message.content)
-            profanity = predict(words) # profanity2 = predict_prob(words)
-            if profanity[0] == 1:
-                await message.delete()
-                await message.channel.send(self.bot.translate.msg(message.guild.id, "onMessage", "DO_NOT_INSULT").format(message.author.mention))
-                # Logs
-                if len(message.content) > 1600:
-                    message.content = message.content + "..."
-                embed = discord.Embed(title = self.bot.translate.msg(message.guild.id, "onMessage", "USER_HAS_SENT_PROFANITY").format(message.author), description = self.bot.translate.msg(message.guild.id, "onMessage", "USER_HAS_SENT_PROFANITY_DESCRIPTION").format(message.channel.mention, message.author, message.author.id, message.content), color = 0xff0000)
-                await sendLogMessage(self, event=message, channel=logChannel, embed=embed)
 
         # Anti spam
         if antiSpam is True:

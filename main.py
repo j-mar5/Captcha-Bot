@@ -1,9 +1,12 @@
 import discord
 import os
+import sys
 import json
 from discord.ext import commands
 from Tools.utils import getGuildPrefix
 from Tools.translate import Translate
+from loguru import logger
+
 
 intents = discord.Intents.default()
 intents.members = True
@@ -16,6 +19,8 @@ bot.remove_command("help") # To create a personal help command
 # Translate
 bot.translate = Translate()
 
+
+
 # Load cogs
 if __name__ == '__main__':
     for filename in os.listdir("Cogs"):
@@ -24,12 +29,17 @@ if __name__ == '__main__':
 
 @bot.event
 async def on_ready():
-    print(f'We have logged in as {bot.user}')
-    print(discord.__version__)
+    logger.info(f'Logged in as {bot.user}')
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name =f"?help"))
 
 # ------------------------ RUN ------------------------ # 
 with open("config.json", "r") as config:
     data = json.load(config)
     token = data["token"]
+    # Logger
+    logger_format = "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <cyan>{" \
+                "name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{" \
+                "message}</level> "
+    logger.remove()
+    logger.add(sys.stdout, format=logger_format, level="DEBUG" if data["debug"] else "INFO", enqueue=True, colorize=True)
 bot.run(token) 

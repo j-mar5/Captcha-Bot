@@ -4,6 +4,7 @@ import json
 from discord.ext import commands
 from discord.utils import get
 from Tools.utils import getConfig, updateConfig, getGuildPrefix
+from loguru import logger
 
 # ------------------------ COGS ------------------------ #  
 
@@ -39,13 +40,15 @@ class SetupCog(commands.Cog, name="setup command"):
                 else:
                     try:
                         loading = await ctx.channel.send(self.bot.translate.msg(ctx.guild.id, "setup", "CREATION_OF_CAPTCHA_PRETECTION"))
-
+                        logger.debug('Beginning captcha setup')
                         # Data
                         data = getConfig(ctx.guild.id)
-
                         # Create role
+                        logger.debug('Creating the temporary role to be applied to new users')
                         temporaryRole = await ctx.guild.create_role(name="untested")
+
                         # Hide all channels
+                        logger.debug('Hiding all channels from the temporary role')
                         for channel in ctx.guild.channels:
                             if isinstance(channel, discord.TextChannel):
 
@@ -61,6 +64,7 @@ class SetupCog(commands.Cog, name="setup command"):
                                 await channel.set_permissions(temporaryRole, overwrite=perms)
 
                         # Create captcha channel
+                        logger.debug('Creating verification channel and applying permissions')
                         captchaChannel = await ctx.guild.create_text_channel('verification')
 
                         perms = captchaChannel.overwrites_for(temporaryRole)
@@ -74,6 +78,7 @@ class SetupCog(commands.Cog, name="setup command"):
 
                         await captchaChannel.edit(slowmode_delay= 5)
                         # Create log channel
+                        logger.debug('Creating log channel')
                         if data["logChannel"] is False:
                             logChannel = await ctx.guild.create_text_channel(f"{self.bot.user.name}-logs")
 
@@ -85,6 +90,7 @@ class SetupCog(commands.Cog, name="setup command"):
                         
                         # Edit configuration.json
                         # Add modifications
+                        logger.debug('Saving data to configuration')
                         data["captcha"] = True
                         data["temporaryRole"] = temporaryRole.id
                         data["captchaChannel"] = captchaChannel.id
@@ -92,6 +98,7 @@ class SetupCog(commands.Cog, name="setup command"):
 
                         updateConfig(ctx.guild.id, data)
                         
+                        logger.debug('Setup complete, deleting loading embeds and reporting success')
                         await loading.delete()
                         embed = discord.Embed(title = self.bot.translate.msg(ctx.guild.id, "setup", "CAPTCHA_WAS_SET_UP_WITH_SUCCESS"), description = self.bot.translate.msg(ctx.guild.id, "setup", "CAPTCHA_WAS_SET_UP_WITH_SUCCESS_DESCRIPTION"), color = 0x2fa737) # Green
                         await ctx.channel.send(embed = embed)
