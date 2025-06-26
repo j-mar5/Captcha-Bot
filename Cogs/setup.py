@@ -69,13 +69,13 @@ class SetupCog(commands.Cog, name="setup command"):
                         except discord.Forbidden as error:
                             logger.error(f"Failed to change permissions (likely missing access to channel {channel} ({channel.id}))")
                             errcount += 1
-                        logger.info("Finished hiding channels")
+                        logger.info("...success!")
                         if errcount > 0:
                             embed = discord.Embed(title=self.bot.translate.msg(ctx.guild.id, "setup", "CHANNEL_ACCESS_WARNING"), description=self.bot.translate.msg(ctx.guild.id, "setup", "CHANNEL_ACCESS_WARNING_DESCRIPTION"), color=0xffff00) # Yellow
                             embed.set_footer(text=self.bot.translate.msg(ctx.guild.id, "global", "BOT_CREATOR"))
                             await ctx.channel.send(embed=embed)
                         # Create captcha channel
-                        logger.debug('Creating verification channel and applying permissions')
+                        logger.info('Creating verification channel and applying permissions')
                         captchaChannel = await ctx.guild.create_text_channel('verification')
 
                         perms = captchaChannel.overwrites_for(temporaryRole)
@@ -90,9 +90,10 @@ class SetupCog(commands.Cog, name="setup command"):
                         try:
                             await captchaChannel.edit(slowmode_delay= 5)
                         except discord.Forbidden as error:
-                            logger.info("Failed to set slowmode; ignoring as it's not very consequential.")
+                            logger.debug("Failed to set slowmode; ignoring as it's not very consequential.")
+                        logger.info("...success!")
                         # Create log channel
-                        logger.debug('Creating log channel')
+                        logger.info('Creating log channel')
                         if data["logChannel"] is False:
                             logChannel = await ctx.guild.create_text_channel(f"{self.bot.user.name}-logs")
 
@@ -111,8 +112,9 @@ class SetupCog(commands.Cog, name="setup command"):
                         
 
                         updateConfig(ctx.guild.id, data)
-                        
-                        logger.debug('Setup complete, deleting loading embeds and reporting success')
+
+                        logger.info("...success!")
+                        logger.success('Captcha channel setup complete!')
                         await loading.delete()
                         embed = discord.Embed(title = self.bot.translate.msg(ctx.guild.id, "setup", "CAPTCHA_WAS_SET_UP_WITH_SUCCESS"), description = self.bot.translate.msg(ctx.guild.id, "setup", "CAPTCHA_WAS_SET_UP_WITH_SUCCESS_DESCRIPTION"), color = 0x2fa737) # Green
                         await ctx.channel.send(embed = embed)

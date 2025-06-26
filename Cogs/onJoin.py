@@ -63,11 +63,11 @@ class OnJoinCog(commands.Cog, name="on join"):
             draw = ImageDraw.Draw(image)
             font = ImageFont.truetype(font= "Tools/arial.ttf", size= 60)
 
-            text = ' '.join(random.choice(string.ascii_uppercase) for _ in range(6)) # + string.ascii_lowercase + string.digits
+            text = ' '.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6)) # + string.ascii_lowercase + string.digits
 
             # Center the text
             W, H = (350,100)
-            w, h = draw.textsize(text, font= font)
+            w, h = draw.textlength(text, font= font)
             draw.text(((W-w)/2,(H-h)/2), text, font= font, fill= (90, 90, 90))
 
             # Save
