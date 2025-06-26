@@ -50,21 +50,24 @@ class SetupCog(commands.Cog, name="setup command"):
 
                         # Hide all channels
                         logger.info('Hiding all channels from the temporary role')
-                        for channel in ctx.guild.channels:
-                            logger.debug(f'Starting to override the permissions for {channel}. Is TextChannel? {isinstance(channel, discord.TextChannel)} Is VoiceChannel? {isinstance(channel, discord.VoiceChannel)}')
-                            if isinstance(channel, discord.TextChannel):
-                                
-                                perms = channel.overwrites_for(temporaryRole)
-                                perms.read_messages=False
-                                await channel.set_permissions(temporaryRole, overwrite=perms)
-                                
-                            elif isinstance(channel, discord.VoiceChannel):
+                        try:
+                            for channel in ctx.guild.channels:
+                                logger.debug(f'Starting to override the permissions for {channel}. Is TextChannel? {isinstance(channel, discord.TextChannel)} Is VoiceChannel? {isinstance(channel, discord.VoiceChannel)}')
+                                if isinstance(channel, discord.TextChannel):
+                                    
+                                    perms = channel.overwrites_for(temporaryRole)
+                                    perms.read_messages=False
+                                    await channel.set_permissions(temporaryRole, overwrite=perms)
+                                    
+                                elif isinstance(channel, discord.VoiceChannel):
 
-                                perms = channel.overwrites_for(temporaryRole)
-                                perms.read_messages=False
-                                perms.connect=False
-                                await channel.set_permissions(temporaryRole, overwrite=perms)
-
+                                    perms = channel.overwrites_for(temporaryRole)
+                                    perms.read_messages=False
+                                    perms.connect=False
+                                    await channel.set_permissions(temporaryRole, overwrite=perms)
+                        except Exception as error:
+                            logger.exception("Error encountered in setting channel permissions")
+                            return
                         # Create captcha channel
                         logger.debug('Creating verification channel and applying permissions')
                         captchaChannel = await ctx.guild.create_text_channel('verification')
