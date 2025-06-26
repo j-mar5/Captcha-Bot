@@ -12,6 +12,7 @@ from discord.utils import get
 from PIL import ImageFont, ImageDraw, Image
 from Tools.utils import getConfig
 from Tools.logMessage import sendLogMessage
+from loguru import logger
 
 # ------------------------ COGS ------------------------ #  
 
@@ -48,23 +49,26 @@ class OnJoinCog(commands.Cog, name="on join"):
                 await sendLogMessage(self, event=member, channel=logChannel, embed=embed)
 
         if data["captcha"] is True:
-            
+            logger.info(f"User {member} joined, starting captcha")
             # Give temporary role
+            logger.info("Giving new member the unverified role")
             getrole = get(member.guild.roles, id = data["temporaryRole"])
             await member.add_roles(getrole)
             
+            logger.info("Generating captcha")
+            logger.debug("Creating background of captcha")
             # Create captcha
             image = np.zeros(shape= (100, 350, 3), dtype= np.uint8)
 
             # Create image 
             image = Image.fromarray(image+255) # +255 : black to white
-
+            logger.debug("...success! Adding random text")
             # Add text
             draw = ImageDraw.Draw(image)
             font = ImageFont.truetype(font= "Tools/arial.ttf", size= 60)
 
             text = ' '.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6)) # + string.ascii_lowercase + string.digits
-
+    
             # Center the text
             W, H = (350,100)
             w = draw.textlength(text, font= font)
@@ -72,6 +76,7 @@ class OnJoinCog(commands.Cog, name="on join"):
             draw.text(((W-w)/2,(H-h)/2), text, font= font, fill= (90, 90, 90))
 
             # Save
+            logger.debug("...success! Saving temporary image to disk")
             ID = member.id
             folderPath = f"captchaFolder/{member.guild.id}/captcha_{ID}"
             try:
@@ -85,6 +90,7 @@ class OnJoinCog(commands.Cog, name="on join"):
             image.save(f"{folderPath}/captcha{ID}.png")
 
             # Deform
+            logger.debug("...success! Deforming image")
             p = Augmentor.Pipeline(folderPath)
             p.random_distortion(probability=1, grid_width=4, grid_height=4, magnitude=14)
             p.process()
@@ -117,16 +123,19 @@ class OnJoinCog(commands.Cog, name="on join"):
                         pixels[i,j] = (90, 90, 90)
 
             # Save
+            logger.debug("...success! Saving final captcha image to disk")
             image.save(f"{folderPath}/output/{captchaName}_2.png")
 
             # Send captcha
+            logger.debug("...success! Sending captcha image to user")
             captchaFile = discord.File(f"{folderPath}/output/{captchaName}_2.png")
             captchaEmbed = await captchaChannel.send(self.bot.translate.msg(member.guild.id, "onJoin", "CAPTCHA_MESSAGE").format(member.mention), file= captchaFile)
             # Remove captcha folder
+            logger.debug("...success! Removing image files on disk")
             try:
                 shutil.rmtree(folderPath)
             except Exception as error:
-                print(f"Delete captcha file failed {error}")
+                logger.error(f"Delete captcha file failed {error}")
 
             # Check if it is the right user
             def check(message):
@@ -134,12 +143,14 @@ class OnJoinCog(commands.Cog, name="on join"):
                     return message.content
 
             try:
+                logger.info(f"Starting timer for {member}")
                 msg = await self.bot.wait_for('message', timeout=120.0, check=check)
+                logger.info(f"Message received from {member}, checking captcha")
                 # Check the captcha
                 password = text.split(" ")
                 password = "".join(password)
                 if msg.content == password:
-
+                    logger.debug("...password correct!")
                     embed = discord.Embed(description=self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_PASSED_THE_CAPTCHA").format(member.mention), color=0x2fa737) # Green
                     await captchaChannel.send(embed = embed, delete_after = 5)
                     # Give and remove roles
@@ -148,12 +159,12 @@ class OnJoinCog(commands.Cog, name="on join"):
                         if getrole is not False:
                             await member.add_roles(getrole)
                     except Exception as error:
-                        print(f"Give and remove roles failed : {error}")
+                        logger.warning(f"Give and remove roles failed for {member}: {error}")
                     try:
                         getrole = get(member.guild.roles, id = data["temporaryRole"])
                         await member.remove_roles(getrole)
                     except Exception as error:
-                        print(f"No temp role found (onJoin) : {error}")
+                        logger.warning(f"No temp role found to remove from {member}: {error}")
                     time.sleep(3)
                     try:
                         await captchaEmbed.delete()
@@ -169,10 +180,9 @@ class OnJoinCog(commands.Cog, name="on join"):
                     await sendLogMessage(self, event=member, channel=logChannel, embed=embed)
 
                 else:
-                    link = await captchaChannel.create_invite(max_age=172800) # Create an invite
                     embed = discord.Embed(description=self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_FAILED_THE_CAPTCHA").format(member.mention), color=0xca1616) # Red
                     await captchaChannel.send(embed = embed, delete_after = 5)
-                    embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "YOU_HAVE_BEEN_KICKED").format(member.guild.name), description = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_FAILED_THE_CAPTCHA_REASON").format(link), color = 0xff0000)
+                    embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "YOU_HAVE_BEEN_KICKED").format(member.guild.name), description = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_FAILED_THE_CAPTCHA_REASON"), color = 0xff0000)
 
                     try:
                         await member.send(embed=embed)
@@ -196,11 +206,10 @@ class OnJoinCog(commands.Cog, name="on join"):
                     await sendLogMessage(self, event=member, channel=logChannel, embed=embed)
 
             except (asyncio.TimeoutError):
-                link = await captchaChannel.create_invite(max_age=172800) # Create an invite
                 embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "TIME_IS_OUT"), description = self.bot.translate.msg(member.guild.id, "onJoin", "USER_HAS_EXCEEDED_THE_RESPONSE_TIME").format(member.mention), color = 0xff0000)
                 await captchaChannel.send(embed = embed, delete_after = 5)
                 try:
-                    embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "YOU_HAVE_BEEN_KICKED").format(member.guild.name), description = self.bot.translate.msg(member.guild.id, "onJoin", "USER_HAS_EXCEEDED_THE_RESPONSE_TIME_REASON").format(link), color = 0xff0000)
+                    embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "YOU_HAVE_BEEN_KICKED").format(member.guild.name), description = self.bot.translate.msg(member.guild.id, "onJoin", "USER_HAS_EXCEEDED_THE_RESPONSE_TIME_REASON"), color = 0xff0000)
                     await member.send(embed = embed)
                     await member.kick() # Kick the user
                 except Exception as error:
