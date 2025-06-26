@@ -1,6 +1,6 @@
 {
     "global": {
-        "BOT_CREATOR": "Bot Created by Darkempire#8245",
+        "BOT_CREATOR": "Captcha Bot",
         "SUCCESS": "**SUCCESS**",
         "ERROR": "**ERROR**",
         "ERROR_OCCURED": "An error was occcured : `{0}`"
@@ -146,6 +146,8 @@
         "CREATION_OF_CAPTCHA_PRETECTION": "Setting up captcha protection...",
         "CAPTCHA_WAS_SET_UP_WITH_SUCCESS": "**CAPTCHA WAS SET UP SUCCESSFULLY**",
         "CAPTCHA_WAS_SET_UP_WITH_SUCCESS_DESCRIPTION": "The captcha was set up successfully.",
+        "CHANNEL_ACCESS_WARNING": "WARNING: Missing Permissions",
+        "CHANNEL_ACCESS_WARNING_DESCRIPTION": "At least one channel was skipped due to missing permissions. Please check the channel permissions to ensure that all non-verification channels are denied read access to the unverified role.",
         "TIME_IS_OUT": "**CONFIRMATION TIMEOUT**",
         "USER_HAS_EXCEEDED_THE_RESPONSE_TIME": "{0} has exceeded the response time (30s).",
         "DELETION_OF_THE_CAPTCHA_PROETECTION": "Deletion of captcha protection...",
