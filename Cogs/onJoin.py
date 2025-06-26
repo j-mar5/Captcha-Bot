@@ -67,7 +67,8 @@ class OnJoinCog(commands.Cog, name="on join"):
 
             # Center the text
             W, H = (350,100)
-            w, h = draw.textlength(text, font= font)
+            w = draw.textlength(text, font= font)
+            h = 45 # magic constant to vertically center the captcha characters in a 100-px space
             draw.text(((W-w)/2,(H-h)/2), text, font= font, fill= (90, 90, 90))
 
             # Save
