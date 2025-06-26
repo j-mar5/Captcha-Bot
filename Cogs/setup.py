@@ -71,7 +71,7 @@ class SetupCog(commands.Cog, name="setup command"):
                             errcount += 1
                         logger.info("Finished hiding channels")
                         if errcount > 0:
-                            embed = discord.Embed(title=self.bot.translate.msg(ctx.guild.id, "setup", "CHANNEL_ACCESS_WARNING"), description=self.bot.translate.msg(ctx.guild.id, "setup", "CHANNEL_ACCESS_WARNING_DESCRIPTION").format(error), color=0xffff00) # Red
+                            embed = discord.Embed(title=self.bot.translate.msg(ctx.guild.id, "setup", "CHANNEL_ACCESS_WARNING"), description=self.bot.translate.msg(ctx.guild.id, "setup", "CHANNEL_ACCESS_WARNING_DESCRIPTION"), color=0xffff00) # Red
                             embed.set_footer(text=self.bot.translate.msg(ctx.guild.id, "global", "BOT_CREATOR"))
                             return await ctx.channel.send(embed=embed)
                         # Create captcha channel
