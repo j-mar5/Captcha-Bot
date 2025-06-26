@@ -66,12 +66,12 @@ class SetupCog(commands.Cog, name="setup command"):
                                     perms.read_messages=False
                                     perms.connect=False
                                     await channel.set_permissions(temporaryRole, overwrite=perms)
-                        except Exception as error:
+                        except discord.Forbidden as error:
                             logger.error(f"Failed to change permissions (likely missing access to channel {channel} ({channel.id}))")
                             errcount += 1
                         logger.info("Finished hiding channels")
                         if errcount > 0:
-                            embed = discord.Embed(title=self.bot.translate.msg(ctx.guild.id, "setup", "CHANNEL_ACCESS_WARNING"), description=self.bot.translate.msg(ctx.guild.id, "setup", "CHANNEL_ACCESS_WARNING_DESCRIPTION"), color=0xffff00) # Red
+                            embed = discord.Embed(title=self.bot.translate.msg(ctx.guild.id, "setup", "CHANNEL_ACCESS_WARNING"), description=self.bot.translate.msg(ctx.guild.id, "setup", "CHANNEL_ACCESS_WARNING_DESCRIPTION"), color=0xffff00) # Yellow
                             embed.set_footer(text=self.bot.translate.msg(ctx.guild.id, "global", "BOT_CREATOR"))
                             await ctx.channel.send(embed=embed)
                         # Create captcha channel
@@ -87,7 +87,10 @@ class SetupCog(commands.Cog, name="setup command"):
                         perms.read_messages=False
                         await captchaChannel.set_permissions(ctx.guild.default_role, overwrite=perms)
 
-                        await captchaChannel.edit(slowmode_delay= 5)
+                        try:
+                            await captchaChannel.edit(slowmode_delay= 5)
+                        except discord.Forbidden as error:
+                            logger.info("Failed to set slowmode; ignoring as it's not very consequential.")
                         # Create log channel
                         logger.debug('Creating log channel')
                         if data["logChannel"] is False:
