@@ -73,7 +73,7 @@ class SetupCog(commands.Cog, name="setup command"):
                         if errcount > 0:
                             embed = discord.Embed(title=self.bot.translate.msg(ctx.guild.id, "setup", "CHANNEL_ACCESS_WARNING"), description=self.bot.translate.msg(ctx.guild.id, "setup", "CHANNEL_ACCESS_WARNING_DESCRIPTION"), color=0xffff00) # Red
                             embed.set_footer(text=self.bot.translate.msg(ctx.guild.id, "global", "BOT_CREATOR"))
-                            return await ctx.channel.send(embed=embed)
+                            await ctx.channel.send(embed=embed)
                         # Create captcha channel
                         logger.debug('Creating verification channel and applying permissions')
                         captchaChannel = await ctx.guild.create_text_channel('verification')
