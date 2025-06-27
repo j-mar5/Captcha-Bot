@@ -39,5 +39,5 @@ class UserInfosCog(commands.Cog, name="user infos command"):
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
-    bot.add_cog(UserInfosCog(bot))
+async def setup(bot):
+    await bot.add_cog(UserInfosCog(bot))

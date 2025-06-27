@@ -76,5 +76,5 @@ class ModerationCog(commands.Cog):
             await ctx.channel.send(self.bot.translate.msg(ctx.guild.id, "moderation", "MEMBER_NOT_FOUND"))
 
 
-def setup(bot:commands.Bot):
-    bot.add_cog(ModerationCog(bot))
+async def setup(bot:commands.Bot):
+    await bot.add_cog(ModerationCog(bot))

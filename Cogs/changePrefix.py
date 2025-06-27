@@ -30,5 +30,5 @@ class ChangePrefixCog(commands.Cog):
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
-    bot.add_cog(ChangePrefixCog(bot))
+async def setup(bot):
+    await bot.add_cog(ChangePrefixCog(bot))

@@ -41,5 +41,5 @@ class LockCog(commands.Cog, name="lock command"):
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
-    bot.add_cog(LockCog(bot))
+async def setup(bot):
+    await bot.add_cog(LockCog(bot))

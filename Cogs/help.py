@@ -66,6 +66,6 @@ class HelpCog(commands.Cog, name="help command"):
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
+async def setup(bot):
     bot.remove_command("help")
-    bot.add_cog(HelpCog(bot))
+    await bot.add_cog(HelpCog(bot))

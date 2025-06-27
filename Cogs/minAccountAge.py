@@ -58,5 +58,5 @@ class MinAccountAgeCog(commands.Cog, name="change min account age command"):
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
-    bot.add_cog(MinAccountAgeCog(bot))
+async def setup(bot):
+    await bot.add_cog(MinAccountAgeCog(bot))

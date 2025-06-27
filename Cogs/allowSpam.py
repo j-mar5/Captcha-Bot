@@ -75,5 +75,5 @@ class AllowSpamCog(commands.Cog, name="allow spam command"):
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
-    bot.add_cog(AllowSpamCog(bot))
+async def setup(bot):
+    await bot.add_cog(AllowSpamCog(bot))

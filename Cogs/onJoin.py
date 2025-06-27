@@ -223,5 +223,5 @@ class OnJoinCog(commands.Cog, name="on join"):
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
-    bot.add_cog(OnJoinCog(bot))
+async def setup(bot):
+    await bot.add_cog(OnJoinCog(bot))

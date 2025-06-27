@@ -62,5 +62,5 @@ class SettingsCog(commands.Cog, name="settings command"):
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
-    bot.add_cog(SettingsCog(bot))
+async def setup(bot):
+    await bot.add_cog(SettingsCog(bot))

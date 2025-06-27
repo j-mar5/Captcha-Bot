@@ -57,5 +57,5 @@ class LogsCog(commands.Cog, name="change setting from logs command"):
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
-    bot.add_cog(LogsCog(bot))
+async def setup(bot):
+    await bot.add_cog(LogsCog(bot))

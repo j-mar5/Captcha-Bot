@@ -34,5 +34,5 @@ class OnChannelCreate(commands.Cog, name="on channel create"):
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
-    bot.add_cog(OnChannelCreate(bot))
+async def setup(bot):
+    await bot.add_cog(OnChannelCreate(bot))
