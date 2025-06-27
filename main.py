@@ -10,6 +10,7 @@ from loguru import logger
 
 intents = discord.Intents.default()
 intents.members = True
+intents.messages = True
 
 bot = commands.Bot(getGuildPrefix, intents = intents)
 
