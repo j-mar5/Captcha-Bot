@@ -107,8 +107,8 @@ class OnJoinCog(commands.Cog, name="on join"):
             width = random.randrange(12, 18)
             co1 = random.randrange(0, 75)
             co3 = random.randrange(275, 350)
-            co2 = random.randrange(40, 65)
-            co4 = random.randrange(40, 65)
+            co2 = random.randrange(20, 65)
+            co4 = random.randrange(20, 65)
             draw = ImageDraw.Draw(image)
             draw.line([(co1, co2), (co3, co4)], width= width, fill= (90, 90, 90))
 
@@ -116,8 +116,8 @@ class OnJoinCog(commands.Cog, name="on join"):
             width = random.randrange(12, 18)
             co1 = random.randrange(0, 75)
             co3 = random.randrange(275, 350)
-            co2 = random.randrange(40, 65)
-            co4 = random.randrange(40, 65)
+            co2 = random.randrange(35, 80)
+            co4 = random.randrange(35, 80)
             draw = ImageDraw.Draw(image)
             draw.line([(co1, co2), (co3, co4)], width= width, fill= (90, 90, 90))
             
