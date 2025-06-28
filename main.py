@@ -24,11 +24,12 @@ bot.translate = Translate()
 
 # Load cogs
 # if __name__ == '__main__':
-async def setup_hook(self) -> None:
+@bot.event
+async def setup_hook():
     for filename in os.listdir("Cogs"):
         if filename.endswith(".py"):
             await bot.load_extension(f"Cogs.{filename[:-3]}")
-    await self.tree.sync()
+    # await bot.sync()
 
 @bot.event
 async def on_ready():
