@@ -92,7 +92,7 @@ class OnJoinCog(commands.Cog, name="on join"):
             # Deform
             logger.debug("...success! Deforming image")
             p = Augmentor.Pipeline(folderPath)
-            p.random_distortion(probability=1, grid_width=2, grid_height=2, magnitude=28)
+            p.random_distortion(probability=1, grid_width=2, grid_height=2, magnitude=35)
             p.process()
 
             # Search file in folder
@@ -104,25 +104,25 @@ class OnJoinCog(commands.Cog, name="on join"):
             image = Image.open(f"{folderPath}/output/{captchaName}")
             
             # Add line
-            width = random.randrange(6, 12)
+            width = random.randrange(10, 15)
             co1 = random.randrange(0, 75)
             co3 = random.randrange(275, 350)
-            co2 = random.randrange(20, 30)
-            co4 = random.randrange(40, 50)
+            co2 = random.randrange(20, 50)
+            co4 = random.randrange(20, 50)
             draw = ImageDraw.Draw(image)
             draw.line([(co1, co2), (co3, co4)], width= width, fill= (90, 90, 90))
 
             # Add another
-            width = random.randrange(6, 12)
+            width = random.randrange(12, 15)
             co1 = random.randrange(0, 75)
             co3 = random.randrange(275, 350)
-            co2 = random.randrange(55, 65)
-            co4 = random.randrange(85, 95)
+            co2 = random.randrange(60, 90)
+            co4 = random.randrange(60, 90)
             draw = ImageDraw.Draw(image)
             draw.line([(co1, co2), (co3, co4)], width= width, fill= (90, 90, 90))
             
             # Add noise
-            noisePercentage = 0.5 # 25%
+            noisePercentage = 0.75 # 25%
 
             pixels = image.load() # create the pixel map
             for i in range(image.size[0]): # for every pixel:
