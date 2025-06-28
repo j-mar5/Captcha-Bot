@@ -104,7 +104,7 @@ class OnJoinCog(commands.Cog, name="on join"):
             image = Image.open(f"{folderPath}/output/{captchaName}")
             
             # Add line
-            width = random.randrange(12, 18)
+            width = random.randrange(6, 12)
             co1 = random.randrange(0, 75)
             co3 = random.randrange(275, 350)
             co2 = random.randrange(20, 65)
@@ -113,7 +113,7 @@ class OnJoinCog(commands.Cog, name="on join"):
             draw.line([(co1, co2), (co3, co4)], width= width, fill= (90, 90, 90))
 
             # Add another
-            width = random.randrange(12, 18)
+            width = random.randrange(7, 15)
             co1 = random.randrange(0, 75)
             co3 = random.randrange(275, 350)
             co2 = random.randrange(35, 80)
