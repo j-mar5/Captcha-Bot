@@ -92,7 +92,7 @@ class OnJoinCog(commands.Cog, name="on join"):
             # Deform
             logger.debug("...success! Deforming image")
             p = Augmentor.Pipeline(folderPath)
-            p.random_distortion(probability=1, grid_width=16, grid_height=16, magnitude=28)
+            p.random_distortion(probability=1, grid_width=4, grid_height=4, magnitude=28)
             p.process()
 
             # Search file in folder
