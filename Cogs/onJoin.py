@@ -122,7 +122,7 @@ class OnJoinCog(commands.Cog, name="on join"):
             draw.line([(co1, co2), (co3, co4)], width= width, fill= (90, 90, 90))
             
             # Add noise
-            noisePercentage = 0.75 # 25%
+            noisePercentage = 0.60 # 25%
 
             pixels = image.load() # create the pixel map
             for i in range(image.size[0]): # for every pixel:
@@ -153,7 +153,7 @@ class OnJoinCog(commands.Cog, name="on join"):
 
             try:
                 logger.info(f"Starting timer for {member}")
-                msg = await self.bot.wait_for('message', timeout=120.0, check=check)
+                msg = await self.bot.wait_for('message', timeout=300.0, check=check)
                 logger.info(f"Message received from {member}, checking captcha")
                 # Check the captcha
                 password = text.split(" ")
