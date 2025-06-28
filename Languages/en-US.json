@@ -20,7 +20,7 @@
         "MIN_ACCOUNT_AGE_KICK_REASON": "Reason : Your account is younger than the servers minimum account age limit ({0} hours).",
         "HAS_BEEN_KICKED": "**{0} has been kicked.**",
         "MIN_ACCOUNT_AGE_HAS_BEEN_KICKED_REASON": "**Reason :** Their account is younger than the servers minimum account age limit ({0} hours)\nAccount created at: {1}\n\n**__User information:__**\n\n**Name:** {2}\n**Id:** {3}",
-        "CAPTCHA_MESSAGE": "**YOU MUST PASS THE CAPTCHA TO ENTER THE SERVER:**\nPlease {0}, enter the captcha to get access to the whole server (only uppercase letters and numbers). You have 2 minutes to answer before an automated kick will occur.",
+        "CAPTCHA_MESSAGE": "**YOU MUST PASS THE CAPTCHA TO ENTER THE SERVER:**\nPlease {0}, enter the captcha to get access to the whole server (only uppercase letters and numbers). You have 5 minutes to answer before an automated kick will occur.\nYou will be kicked if you fail the captcha or do not answer in time, but you may re-join using the same invite link to try again.",
         "MEMBER_PASSED_THE_CAPTCHA": "{0} passed the captcha.",
         "USER_INFORMATIONS": "**__User information:__**\n\n**Name:** {0}\n**Id:** {1}",
         "DATE": "at {0}" ,
@@ -28,7 +28,7 @@
         "MEMBER_FAILED_THE_CAPTCHA_REASON": "Reason : You failed the captcha.",
         "MEMBER_FAILED_THE_CAPTCHA_REASON_LOG": "**Reason :** They failed the captcha.\n\n**__User information:__**\n\n**Name:** {0}\n**Id:** {1}",
         "TIME_IS_OUT": "**CAPTCHA TIMEOUT**",
-        "USER_HAS_EXCEEDED_THE_RESPONSE_TIME_REASON": "Reason : You exceeded the captcha response time (120s).",
+        "USER_HAS_EXCEEDED_THE_RESPONSE_TIME_REASON": "Reason : You exceeded the captcha response time (120s). You can re-join the server using the same invite link to try again.",
         "USER_HAS_EXCEEDED_THE_RESPONSE_TIME": "{0} has exceeded the response time (120s).",
         "USER_HAS_EXCEEDED_THE_RESPONSE_TIME_LOG": "**Reason :** They exceeded the captcha response time (120s).\n\n**__User information:__**\n\n**Name:** {0}\n**Id:** {1}"
     },
