@@ -67,7 +67,9 @@ class OnJoinCog(commands.Cog, name="on join"):
             draw = ImageDraw.Draw(image)
             font = ImageFont.truetype(font= "Tools/arial.ttf", size= 60)
 
-            text = ' '.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6)) # + string.ascii_lowercase + string.digits
+            numbers = '23456789' # restricted choices to avoid ambiguous characters
+            letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ' # restricted choices to avoid ambiguous characters
+            text = ' '.join(random.choice(numbers + letters) for _ in range(6)) # + string.ascii_lowercase + string.digits
     
             # Center the text
             W, H = (350,100)
