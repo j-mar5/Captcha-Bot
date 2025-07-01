@@ -25,7 +25,7 @@ class UserInfosCog(commands.Cog, name="user infos command"):
         member = self.bot.get_user(int(member[0]))
 
         if member is not None:
-            embed = discord.Embed(title=self.bot.translate.msg(ctx.guild.id, "userinfos", "USER_INFORMATIONS").format(member.name), description="[**GitHub**](https://github.com/Darkempire78/Raid-Protect-Discord-Bot)", color=randint(0, 0xffffff))
+            embed = discord.Embed(title=self.bot.translate.msg(ctx.guild.id, "userinfos", "USER_INFORMATIONS").format(member.name), description="", color=randint(0, 0xffffff))
             embed.set_thumbnail(url=f'{str(member.display_avatar)}')
             embed.add_field(name=self.bot.translate.msg(ctx.guild.id, "userinfos", "MEMBER_ID"), value=f"{member.id}", inline=True)
             embed.add_field(name=self.bot.translate.msg(ctx.guild.id, "userinfos", "ACCOUNT_CREATION"), value=f"{member.created_at.year}-{member.created_at.month}-{member.created_at.day} {member.created_at.hour}:{member.created_at.minute}:{member.created_at.second}", inline=True)

@@ -36,7 +36,7 @@ class HelpCog(commands.Cog):
             if commandName2 is None:
                 await ctx.channel.send("No command found!")   
             else:
-                embed = discord.Embed(title=f"**{commandName2.name.upper()} COMMAND :**", description="[**GitHub**](https://github.com/Darkempire78/Raid-Protect-Discord-Bot)", color=0xdeaa0c)
+                embed = discord.Embed(title=f"**{commandName2.name.upper()} COMMAND :**", description="", color=0xdeaa0c)
                 embed.set_thumbnail(url=f'{str(self.bot.user.display_avatar)}')
                 embed.add_field(name=f"**NAME :**", value=f"{commandName2.name}", inline=False)
                 aliases = ""
@@ -53,11 +53,11 @@ class HelpCog(commands.Cog):
                 prefix = await getGuildPrefix(self.bot, ctx)
                 embed.add_field(name=f"**USAGE :**", value=f"{prefix}{commandName2.name} {commandName2.usage}", inline=False)
                 embed.add_field(name=f"**DESCRIPTION :**", value=f"{commandName2.description}", inline=False)
-                embed.set_footer(text="Bot Created by Darkempire#8245")
+                embed.set_footer(text="Captcha Bot")
                 await ctx.channel.send(embed=embed)
         else:
             prefix = await getGuildPrefix(self.bot, ctx)
-            embed = discord.Embed(title=f"__**Help page of {self.bot.user.name.upper()}**__", description="[**GitHub**](https://github.com/Darkempire78/Raid-Protect-Discord-Bot)\n\n**{prefix}help (command) :**Display the help list or the help data for a specific command.", color=0xdeaa0c)
+            embed = discord.Embed(title=f"__**Help page of {self.bot.user.name.upper()}**__", description="**{prefix}help (command) :**Display the help list or the help data for a specific command.", color=0xdeaa0c)
             embed.set_thumbnail(url=f'{str(self.bot.user.display_avatar)}')
             embed.add_field(name=f"__ADMIN :__", value=f"**{prefix}setup <on/off> :** Set up the captcha protection.\n**{prefix}settings :** Display the list of settings.\n**{prefix}giveroleaftercaptcha <role ID/off> :** Give a role after that the user passed the captcha.\n**{prefix}minaccountage <number (hours)> :** set a minimum age to join the server (24 hours by default).\n**{prefix}antinudity <true/false> :** Enable or disable the nudity image protection.\n**{prefix}antiprofanity <true/false> :** Enable or disable the profanity protection.\n**{prefix}antispam <true/false> :** Enable or disable the spam protection.\n**{prefix}allowspam <#channel> (remove) :** Enable or disable the spam protection in a specific channel.\n**{prefix}lock | unlock <#channel/ID> :** Lock/Unlock a channel.\n\n**{prefix}kick <@user/ID> :** Kick the user.\n**{prefix}ban <@user/ID> :** ban the user.\n\n**{prefix}changeprefix <prefix> :** Change the bot's prefix.\n**{prefix}changelanguage <language> :** Change the bot's language.", inline=False)
             embed.add_field(name=f"__COMMANDS :__", value=f"**{prefix}userinfos <@user/ID> :** Get user infomations.", inline=False)
