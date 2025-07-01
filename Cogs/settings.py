@@ -11,13 +11,29 @@ class SettingsCog(commands.Cog, name="settings command"):
         
 
 # ------------------------------------------------------ #  
-    settings = app_commands.Group(name="settings", description="View and set settings")
-    @settings.command(name = 'view',
-                        description="Display the settings.")
+    #Set command tree:
+    #  config (config_group)
+    #    ├── view (view)
+    #    └── set (config_set_group)
+    #        ├── captcha
+    #        │   ├── enabled
+    #        │   ├── verification_channel
+    #        │   ├── verified_role
+    #        │   ├── maintain_permissions
+    #        │   ├── setup [pass in role & channel, or default to current hard-coded values]
+    #        │   └── temp_role
+    #        ├── language
+    #        ├── log_channel
+    #        └── min_account_age
+    config_group = app_commands.Group(name="config", description="View and set configuration")
+    config_set_group = app_commands.Group(name="set", description="Modify configuration", parent=config_group)
+
+    @config_group.command(name = 'view',
+                        description="Display the current configuration.")
     @app_commands.default_permissions(manage_guild=True)
     @commands.cooldown(1, 3, commands.BucketType.member)
     @commands.guild_only()
-    async def settings (self, inter: discord.Interaction):
+    async def view (self, inter: discord.Interaction):
 
         data = getConfig(inter.guild_id)
         captcha = data["captcha"] 
@@ -56,6 +72,8 @@ class SettingsCog(commands.Cog, name="settings command"):
         embed.add_field(name= self.bot.translate.msg(inter.guild_id, "settings", "MINIMUM_ACCOUNT_AGE").format("/"), value= self.bot.translate.msg(inter.guild_id, "settings", "MINIMUM_ACCOUNT_AGE_DESCRIPTION").format(minAccountAge), inline=False)
         embed.set_footer(text=self.bot.translate.msg(inter.guild_id, "global", "BOT_CREATOR"))
         await inter.response.send_message(embed=embed)
+
+    
 
 
 # ------------------------ BOT ------------------------ #  
