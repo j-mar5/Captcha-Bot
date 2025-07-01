@@ -27,8 +27,9 @@ class ReVerifyCog(commands.Cog, name="re-verify"):
     @app_commands.guild_only()
     @app_commands.default_permissions(kick_members=True)
     async def reverify(self, interaction: discord.Interaction, member: discord.Member):
-        await interaction.response.defer()
+        await interaction.response.defer(ephemeral=True)
         if (member.bot):
+            await interaction.edit_original_response(content="Can't verify a bot!")
             return
 
         # Read configuration.json
@@ -38,21 +39,8 @@ class ReVerifyCog(commands.Cog, name="re-verify"):
 
         memberTime = f"{member.joined_at.year}-{member.joined_at.month}-{member.joined_at.day} {member.joined_at.hour}:{member.joined_at.minute}:{member.joined_at.second}"
 
-        # Check the user account creation date (1 day by default)
-        if data["minAccountDate"] is False:
-            userAccountDate = member.created_at.timestamp()
-            if userAccountDate < data["minAccountDate"]:
-                minAccountDate = data["minAccountDate"] / 3600
-                embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "YOU_HAVE_BEEN_KICKED").format(member.guild.name), description = self.bot.translate.msg(member.guild.id, "onJoin", "MIN_ACCOUNT_AGE_KICK_REASON").format(minAccountDate), color = 0xff0000)
-                await member.send(embed = embed)
-                await member.kick() # Kick the user
-                # Logs
-                embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "HAS_BEEN_KICKED").format(member), description = self.bot.translate.msg(member.guild.id, "onJoin", "MIN_ACCOUNT_AGE_HAS_BEEN_KICKED_REASON").format(minAccountDate, member.created_at, member, member.id), color = 0xff0000)
-                embed.set_footer(text= f"at {member.joined_at}")
-                await sendLogMessage(self, event=member, channel=logChannel, embed=embed)
-
         if data["captcha"] is True:
-            logger.info(f"User {member} joined, starting captcha")
+            logger.info(f"User {member} marked for re-verification, starting captcha generation")
             # Give temporary role
             logger.info("Giving new member the unverified role")
             getrole = get(member.guild.roles, id = data["temporaryRole"])

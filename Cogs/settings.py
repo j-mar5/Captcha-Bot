@@ -11,15 +11,15 @@ class SettingsCog(commands.Cog, name="settings command"):
         
 
 # ------------------------------------------------------ #  
-
-    @commands.hybrid_command(name = 'settings',
+    settings = app_commands.Group(name="settings", description="View and set settings")
+    @settings.command(name = 'view',
                         description="Display the settings.")
     @app_commands.default_permissions(manage_guild=True)
     @commands.cooldown(1, 3, commands.BucketType.member)
     @commands.guild_only()
-    async def settings (self, ctx: commands.Context[commands.Bot]):
+    async def settings (self, inter: discord.Interaction):
 
-        data = getConfig(ctx.guild.id)
+        data = getConfig(inter.guild_id)
         captcha = data["captcha"] 
         captchaChannel = data["captchaChannel"]  
         logChannel = data["logChannel"]
@@ -48,18 +48,14 @@ class SettingsCog(commands.Cog, name="settings command"):
         if logChannel is not False:
             logChannel = f"<#{logChannel}>"
 
-        prefix = await getGuildPrefix(self.bot, ctx)
+        # prefix = await getGuildPrefix(self.bot, ctx)
 
-        embed = discord.Embed(title=self.bot.translate.msg(ctx.guild.id, "settings", "SERVER_SETTINGS"), description=f"", color=0xdeaa0c)
-        embed.add_field(name= self.bot.translate.msg(ctx.guild.id, "settings", "CAPTCHA_PROTECTION").format(prefix), value= self.bot.translate.msg(ctx.guild.id, "settings", "CAPTCHA_PROTECTION_DESCRIPTION").format(captcha, captchaChannel, logChannel, temporaryRole), inline=False)
-        embed.add_field(name= self.bot.translate.msg(ctx.guild.id, "settings", "ROLE_GIVEN_AFTER_CAPTCHA").format(prefix), value= self.bot.translate.msg(ctx.guild.id, "settings", "ROLE_GIVEN_AFTER_CAPTCHA_DESCRIPTION").format(roleGivenAfterCaptcha), inline=False)
-        embed.add_field(name= self.bot.translate.msg(ctx.guild.id, "settings", "MINIMUM_ACCOUNT_AGE").format(prefix), value= self.bot.translate.msg(ctx.guild.id, "settings", "MINIMUM_ACCOUNT_AGE_DESCRIPTION").format(minAccountAge), inline=False)
-        embed.add_field(name= self.bot.translate.msg(ctx.guild.id, "settings", "ANTI_SPAM").format(prefix), value= self.bot.translate.msg(ctx.guild.id, "settings", "ANTI_SPAM_DESCRIPTION").format(antispam), inline=False)
-        embed.add_field(name= self.bot.translate.msg(ctx.guild.id, "settings", "ALLOW_SPAM").format(prefix), value= self.bot.translate.msg(ctx.guild.id, "settings", "ALLOW_SPAM_DESCRIPTION").format(allowSpam2[:-2]), inline=False)
-        embed.add_field(name= self.bot.translate.msg(ctx.guild.id, "settings", "ANTI_NUDITY").format(prefix), value= self.bot.translate.msg(ctx.guild.id, "settings", "ANTI_NUDITY_DESCRIPTION").format(antiNudity), inline=False)
-        embed.add_field(name= self.bot.translate.msg(ctx.guild.id, "settings", "ANTI_PROFANITY").format(prefix), value= self.bot.translate.msg(ctx.guild.id, "settings", "ANTI_PROFANITY_DESCRIPTION").format(antiProfanity), inline=False)
-        embed.set_footer(text=self.bot.translate.msg(ctx.guild.id, "global", "BOT_CREATOR"))
-        return await ctx.channel.send(embed=embed)
+        embed = discord.Embed(title=self.bot.translate.msg(inter.guild_id, "settings", "SERVER_SETTINGS"), description=f"", color=0xdeaa0c)
+        embed.add_field(name= self.bot.translate.msg(inter.guild_id, "settings", "CAPTCHA_PROTECTION").format("/"), value= self.bot.translate.msg(inter.guild_id, "settings", "CAPTCHA_PROTECTION_DESCRIPTION").format(captcha, captchaChannel, logChannel, temporaryRole), inline=False)
+        embed.add_field(name= self.bot.translate.msg(inter.guild_id, "settings", "ROLE_GIVEN_AFTER_CAPTCHA").format("/"), value= self.bot.translate.msg(inter.guild_id, "settings", "ROLE_GIVEN_AFTER_CAPTCHA_DESCRIPTION").format(roleGivenAfterCaptcha), inline=False)
+        embed.add_field(name= self.bot.translate.msg(inter.guild_id, "settings", "MINIMUM_ACCOUNT_AGE").format("/"), value= self.bot.translate.msg(inter.guild_id, "settings", "MINIMUM_ACCOUNT_AGE_DESCRIPTION").format(minAccountAge), inline=False)
+        embed.set_footer(text=self.bot.translate.msg(inter.guild_id, "global", "BOT_CREATOR"))
+        await inter.response.send_message(embed=embed)
 
 
 # ------------------------ BOT ------------------------ #  
