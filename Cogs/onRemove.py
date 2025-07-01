@@ -27,5 +27,5 @@ class OnRemoveCog(commands.Cog, name="on remove"):
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
-    bot.add_cog(OnRemoveCog(bot))
+async def setup(bot):
+    await bot.add_cog(OnRemoveCog(bot))

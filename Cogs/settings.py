@@ -48,7 +48,7 @@ class SettingsCog(commands.Cog, name="settings command"):
 
         prefix = await getGuildPrefix(self.bot, ctx)
 
-        embed = discord.Embed(title=self.bot.translate.msg(ctx.guild.id, "settings", "SERVER_SETTINGS"), description=f"[**GitHub**](https://github.com/Darkempire78/Raid-Protect-Discord-Bot)", color=0xdeaa0c)
+        embed = discord.Embed(title=self.bot.translate.msg(ctx.guild.id, "settings", "SERVER_SETTINGS"), description=f"", color=0xdeaa0c)
         embed.add_field(name= self.bot.translate.msg(ctx.guild.id, "settings", "CAPTCHA_PROTECTION").format(prefix), value= self.bot.translate.msg(ctx.guild.id, "settings", "CAPTCHA_PROTECTION_DESCRIPTION").format(captcha, captchaChannel, logChannel, temporaryRole), inline=False)
         embed.add_field(name= self.bot.translate.msg(ctx.guild.id, "settings", "ROLE_GIVEN_AFTER_CAPTCHA").format(prefix), value= self.bot.translate.msg(ctx.guild.id, "settings", "ROLE_GIVEN_AFTER_CAPTCHA_DESCRIPTION").format(roleGivenAfterCaptcha), inline=False)
         embed.add_field(name= self.bot.translate.msg(ctx.guild.id, "settings", "MINIMUM_ACCOUNT_AGE").format(prefix), value= self.bot.translate.msg(ctx.guild.id, "settings", "MINIMUM_ACCOUNT_AGE_DESCRIPTION").format(minAccountAge), inline=False)
@@ -62,5 +62,5 @@ class SettingsCog(commands.Cog, name="settings command"):
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
-    bot.add_cog(SettingsCog(bot))
+async def setup(bot):
+    await bot.add_cog(SettingsCog(bot))

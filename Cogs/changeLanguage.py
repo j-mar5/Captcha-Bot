@@ -5,7 +5,7 @@ from Tools.utils import getConfig, updateConfig
 
 # ------------------------ COGS ------------------------ #  
 
-class ChangePrefixCog(commands.Cog):
+class ChangeLanguageCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -37,5 +37,5 @@ class ChangePrefixCog(commands.Cog):
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
-    bot.add_cog(ChangePrefixCog(bot))
+async def setup(bot):
+    await bot.add_cog(ChangeLanguageCog(bot))

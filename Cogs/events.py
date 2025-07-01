@@ -27,10 +27,10 @@ class EventsCog(commands.Cog, name="EventsCog"):
             else:
                 await ctx.send(self.bot.translate.msg(ctx.guild.id, "events", "COMMAND_IN_COOLDOWN_SECOND").format(round(error.retry_after)))
         elif isinstance(error, BotMissingPermissions):
-            missing = ", ".join(error.missing_perms)
+            missing = ", ".join(error.missing_permissions)
             return await ctx.send(self.bot.translate.msg(ctx.guild.id, "events", "BOT_MISSING_PERMISSIONS").format(ctx.author.mention, missing))
         elif isinstance(error, MissingPermissions):
-            missing = ", ".join(error.missing_perms)
+            missing = ", ".join(error.missing_permissions)
             return await ctx.send(self.bot.translate.msg(ctx.guild.id, "events", "MISSING_PERMISSIONS").format(ctx.author.mention, missing))
         elif isinstance(error, MissingRequiredArgument):
             prefix = await getGuildPrefix(self.bot, ctx)
@@ -40,5 +40,5 @@ class EventsCog(commands.Cog, name="EventsCog"):
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
-    bot.add_cog(EventsCog(bot))
+async def setup(bot):
+    await bot.add_cog(EventsCog(bot))

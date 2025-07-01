@@ -1,6 +1,6 @@
 {
     "global": {
-        "BOT_CREATOR": "Bot créé par Darkempire#8245",
+        "BOT_CREATOR": "Captcha Bot",
         "SUCCESS": "**SUCCÈS**",
         "ERROR": "**ERREUR**",
         "ERROR_OCCURED": "Une erreur a été rencontrée : `{0}`"

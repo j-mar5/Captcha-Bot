@@ -41,5 +41,5 @@ class AntiProfanityCog(commands.Cog, name="change setting from anti nudity comma
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
-    bot.add_cog(AntiProfanityCog(bot))
+async def setup(bot):
+    await bot.add_cog(AntiProfanityCog(bot))

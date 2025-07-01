@@ -42,5 +42,5 @@ class AntiSpamCog(commands.Cog, name="change setting from anti spam command"):
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
-    bot.add_cog(AntiSpamCog(bot))
+async def setup(bot):
+   await bot.add_cog(AntiSpamCog(bot))

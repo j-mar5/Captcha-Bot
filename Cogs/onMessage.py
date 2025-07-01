@@ -74,5 +74,5 @@ class OnMessageCog(commands.Cog, name="on message"):
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
-    bot.add_cog(OnMessageCog(bot))
+async def setup(bot):
+    await bot.add_cog(OnMessageCog(bot))

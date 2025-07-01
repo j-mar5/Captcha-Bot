@@ -168,5 +168,5 @@ class SetupCog(commands.Cog, name="setup command"):
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
-    bot.add_cog(SetupCog(bot))
+async def setup(bot):
+    await bot.add_cog(SetupCog(bot))

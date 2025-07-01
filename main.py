@@ -10,6 +10,7 @@ from loguru import logger
 
 intents = discord.Intents.default()
 intents.members = True
+intents.message_content = True
 
 bot = commands.Bot(getGuildPrefix, intents = intents)
 
@@ -22,10 +23,13 @@ bot.translate = Translate()
 
 
 # Load cogs
-if __name__ == '__main__':
+# if __name__ == '__main__':
+@bot.event
+async def setup_hook():
     for filename in os.listdir("Cogs"):
         if filename.endswith(".py"):
-            bot.load_extension(f"Cogs.{filename[:-3]}")
+            await bot.load_extension(f"Cogs.{filename[:-3]}")
+    # await bot.sync()
 
 @bot.event
 async def on_ready():

@@ -40,5 +40,5 @@ class UnlockCog(commands.Cog, name="unlock command"):
 
 # ------------------------ BOT ------------------------ #  
 
-def setup(bot):
-    bot.add_cog(UnlockCog(bot))
+async def setup(bot):
+    await bot.add_cog(UnlockCog(bot))
