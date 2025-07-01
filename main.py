@@ -33,6 +33,8 @@ async def setup_hook():
 
 @bot.event
 async def on_ready():
+    await bot.tree.sync()
+    logger.info("Synced commands")
     logger.success(f'Logged in as {bot.user}')
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name =f"?help"))
 

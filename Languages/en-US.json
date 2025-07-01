@@ -32,6 +32,9 @@
         "USER_HAS_EXCEEDED_THE_RESPONSE_TIME": "{0} has exceeded the response time (120s).",
         "USER_HAS_EXCEEDED_THE_RESPONSE_TIME_LOG": "**Reason :** They exceeded the captcha response time (120s).\n\n**__User information:__**\n\n**Name:** {0}\n**Id:** {1}"
     },
+    "reVerify": {
+        "REVERIFICATION_MESSAGE": "**VERIFICATION REQUIRED**\n {0}, server staff require you to verify you are human. Please solve the captcha to regain access to the whole server (only uppercase letters and numbers). You will have 12 hours to answer before an automated kick will occur.\nYou will be kicked if you fail the captcha or do not answer in time, but you may re-join using any server invite link."
+    },
     "onMessage": {
         "USER_HAS_SENT_NUDITY": "**{0} has sent an explict image.**",
         "USER_HAS_SENT_NUDITY_DESCRIPTION": "In {0}.\n\n**__User information:__**\n\n**Name:** {1}\n**Id:** {2}\n\n**The image:**",

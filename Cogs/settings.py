@@ -1,21 +1,23 @@
 import discord
 from Tools.utils import getConfig, getGuildPrefix
 from discord.ext import commands
+from discord import app_commands
 
 # ------------------------ COGS ------------------------ #  
 
 class SettingsCog(commands.Cog, name="settings command"):
     def __init__(self, bot):
         self.bot = bot
+        
 
 # ------------------------------------------------------ #  
 
-    @commands.command(name = 'settings',
+    @commands.hybrid_command(name = 'settings',
                         description="Display the settings.")
-    @commands.has_permissions(administrator = True)
+    @app_commands.default_permissions(manage_guild=True)
     @commands.cooldown(1, 3, commands.BucketType.member)
     @commands.guild_only()
-    async def settings (self, ctx):
+    async def settings (self, ctx: commands.Context[commands.Bot]):
 
         data = getConfig(ctx.guild.id)
         captcha = data["captcha"] 
