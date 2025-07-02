@@ -105,7 +105,11 @@
         "LOG_CHANNEL_ENABLED": "**LOG CHANNEL WAS ENABLED**",
         "LOG_CHANNEL_ENABLED_DESCRIPTION": "The log channel was enabled.",
         "LOG_CHANNEL_DISABLED": "**LOG CHANNEL WAS DISABLED**",
-        "LOG_CHANNEL_DISABLED_DESCRIPTION": "The log channel was disabled."
+        "LOG_CHANNEL_DISABLED_DESCRIPTION": "The log channel was disabled.",
+        "LOG_CHANNEL_WRONG_TYPE": "**INVALID CHANNEL TYPE**",
+        "LOG_CHANNEL_WRONG_TYPE_DESCRIPTION": "The log channel can only be a text channel. Please try again with a text channel selected.",
+        "LOG_CHANNEL_MISSING_PERMISSIONS": "**MISSING PERMISSIONS**",
+        "LOG_CHANNEL_MISSING_PERMISSIONS_DESCRIPTION": "The bot does not have permissions to send messages and embed links in the channel you selected. Please check the permissions and try again."
     },
     "minAccountAge": {
         "MINIMUM_ACCOUNT_AGE_ENABLED": "**MINIMUM ACCOUNT AGE WAS ENABLED**",

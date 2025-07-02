@@ -29,7 +29,6 @@ async def setup_hook():
     for filename in os.listdir("Cogs"):
         if filename.endswith(".py"):
             await bot.load_extension(f"Cogs.{filename[:-3]}")
-    # await bot.sync()
 
 @bot.event
 async def on_ready():
