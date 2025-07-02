@@ -133,7 +133,7 @@ class SettingsCog(commands.Cog, name="settings command"):
             try:
                 chan_perms.send_messages = True
                 chan_perms.embed_links = True
-                await inter.channel.set_permissions(inter.guild.me, overwrite=chan_perms)
+                await channel.set_permissions(inter.guild.me, overwrite=chan_perms)
             # Forbidden - no access, must error out
             except discord.Forbidden:
                 embed = discord.Embed(title=self.bot.translate.msg(inter.guild_id, "logs", "LOG_CHANNEL_MISSING_PERMISSIONS", 
