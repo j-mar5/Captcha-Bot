@@ -3,6 +3,7 @@ from Tools.utils import getConfig, updateConfig
 from discord.ext import commands
 from discord import app_commands
 import enum
+from typing import Optional
 # ------------------------ COGS ------------------------ # 
 class Languages(str, enum.Enum):
     English = "en-US"
@@ -104,7 +105,7 @@ class SettingsCog(commands.Cog, name="settings command"):
     @config_set_group.command(name="log_channel", description="Set the channel to log bot events to (or disable this function if no channel is specified)")
     @app_commands.guild_only()
     @app_commands.default_permissions(manage_guild=True)
-    async def log_channel(self, inter: discord.Interaction, channel: discord.abc.GuildChannel):
+    async def log_channel(self, inter: discord.Interaction, channel: Optional[discord.TextChannel] = None):
         # Disable log if no channel specified
         if channel is None:
             # Read configuration.json
@@ -116,7 +117,7 @@ class SettingsCog(commands.Cog, name="settings command"):
             updateConfig(inter.guild_id, data)
             # Respond
             embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "logs", "LOG_CHANNEL_DISABLED"), 
-                                  description = self.bot.translate.msg(ctx.guild.id, "logs", "LOG_CHANNEL_DISABLED_DESCRIPTION"), color = 0xe00000) # Red
+                                  description = self.bot.translate.msg(inter.guild_id, "logs", "LOG_CHANNEL_DISABLED_DESCRIPTION"), color = 0xe00000) # Red
             await inter.response.send_message(embed=embed)
 
         # Only allow text channels to be specified
