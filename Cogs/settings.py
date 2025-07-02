@@ -128,9 +128,10 @@ class SettingsCog(commands.Cog, name="settings command"):
             return await inter.response.send_message(embed=embed, ephemeral=True)
         # Verify we have permissions
         chan_perms = channel.overwrites_for(inter.guild.me)
-        if not chan_perms.send_messages or not chan_perms.embed_links:
+        if not chan_perms.send_messages or not chan_perms.embed_links or not chan_perms.view_channel:
             # Try to fix them (if we have admin, for instance)
             try:
+                chan_perms.view_channel = True
                 chan_perms.send_messages = True
                 chan_perms.embed_links = True
                 await channel.set_permissions(inter.guild.me, overwrite=chan_perms)

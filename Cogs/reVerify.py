@@ -147,7 +147,7 @@ class ReVerifyCog(commands.Cog, name="re-verify"):
 
             try:
                 logger.info(f"Starting timer for {member}")
-                msg = await self.bot.wait_for('message', timeout=300.0, check=check)
+                msg = await self.bot.wait_for('message', timeout=43200.0, check=check)
                 logger.info(f"Message received from {member}, checking captcha")
                 # Check the captcha
                 password = text.split(" ")
@@ -209,10 +209,10 @@ class ReVerifyCog(commands.Cog, name="re-verify"):
                     await sendLogMessage(self, event=member, channel=logChannel, embed=embed)
 
             except (asyncio.TimeoutError):
-                embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "TIME_IS_OUT"), description = self.bot.translate.msg(member.guild.id, "onJoin", "USER_HAS_EXCEEDED_THE_RESPONSE_TIME").format(member.mention), color = 0xff0000)
+                embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "TIME_IS_OUT"), description = self.bot.translate.msg(member.guild.id, "onJoin", "REVERIFY_USER_HAS_EXCEEDED_THE_RESPONSE_TIME").format(member.mention), color = 0xff0000)
                 await captchaChannel.send(embed = embed, delete_after = 5)
                 try:
-                    embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "YOU_HAVE_BEEN_KICKED").format(member.guild.name), description = self.bot.translate.msg(member.guild.id, "onJoin", "USER_HAS_EXCEEDED_THE_RESPONSE_TIME_REASON"), color = 0xff0000)
+                    embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "YOU_HAVE_BEEN_KICKED").format(member.guild.name), description = self.bot.translate.msg(member.guild.id, "onJoin", "REVERIFY_USER_HAS_EXCEEDED_THE_RESPONSE_TIME_REASON"), color = 0xff0000)
                     await member.send(embed = embed)
                     await member.kick() # Kick the user
                 except Exception as error:
@@ -220,7 +220,7 @@ class ReVerifyCog(commands.Cog, name="re-verify"):
                 time.sleep(3)
                 await captchaEmbed.delete()
                 # Logs
-                embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_HAS_BEEN_KICKED").format(member), description = self.bot.translate.msg(member.guild.id, "onJoin", "USER_HAS_EXCEEDED_THE_RESPONSE_TIME_LOG").format(member, member.id), color = 0xff0000)
+                embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_HAS_BEEN_KICKED").format(member), description = self.bot.translate.msg(member.guild.id, "onJoin", "REVERIFY_USER_HAS_EXCEEDED_THE_RESPONSE_TIME_LOG").format(member, member.id), color = 0xff0000)
                 embed.set_footer(text= self.bot.translate.msg(member.guild.id, "onJoin", "DATE").format(memberTime))
                 await sendLogMessage(self, event=member, channel=logChannel, embed=embed)
 
