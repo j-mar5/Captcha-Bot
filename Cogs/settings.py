@@ -19,22 +19,22 @@ class SettingsCog(commands.Cog, name="settings command"):
 
 # ------------------------------------------------------ #  
     #Set command tree:
-    #  config (config_group)
-    #    ├── view (view)
-    #    └── set (config_set_group)
-    #        ├── captcha (config_captcha_group)
-    #        │   ├── enabled
-    #        │   ├── verification_channel
-    #        │   ├── verified_role
-    #        │   ├── maintain_permissions
-    #        │   ├── setup [pass in role & channel, or default to current hard-coded values]
-    #        │   └── temp_role
-    #        ├── language (language)
-    #        ├── log_channel
-    #        └── min_account_age
+    #config (config_group)
+    #   ├── view (view)
+    #   ├── set (config_set_group)
+    #   │       ├── language (language)
+    #   │       ├── log_channel
+    #   │       └── min_account_age
+    #   └── captcha (config_captcha_group)
+    #       ├── enabled
+    #       ├── verification_channel
+    #       ├── verified_role
+    #       ├── maintain_permissions_on_new_channel
+    #       ├── setup [pass in role & channel, or default to current hard-coded values]
+    #       └── temp_role
     config_group = app_commands.Group(name="config", description="View and set configuration", guild_only=True)
     config_set_group = app_commands.Group(name="set", description="Modify configuration", parent=config_group)
-    config_captcha_group = app_commands.Group(name="captcha", description="Modify captcha configuration", parent=config_set_group)
+    config_captcha_group = app_commands.Group(name="captcha", description="Modify captcha configuration", parent=config_group)
 
     # /config view
     @config_group.command(name = 'view',
