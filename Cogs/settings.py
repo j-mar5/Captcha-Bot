@@ -100,8 +100,8 @@ class SettingsCog(commands.Cog, name="settings command"):
         
         await inter.response.send_message(self.bot.translate.msg(inter.guild_id, "changelanguage", "NEW_LANGUAGE").format(language))
     
-    # /config set log channel
-    @config_set_group.command(name="log channel", description="Set the channel to log bot events to (or disable this function if no channel is specified)")
+    # /config set log_channel
+    @config_set_group.command(name="log_channel", description="Set the channel to log bot events to (or disable this function if no channel is specified)")
     @app_commands.guild_only()
     @app_commands.default_permissions(manage_guild=True)
     async def log_channel(self, inter: discord.Interaction, channel: discord.abc.GuildChannel):
