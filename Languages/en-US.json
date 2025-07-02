@@ -23,7 +23,7 @@
         "CAPTCHA_MESSAGE": "**YOU MUST PASS THE CAPTCHA TO ENTER THE SERVER:**\nPlease {0}, enter the captcha to get access to the whole server (only uppercase letters and numbers). You have 5 minutes to answer before an automated kick will occur.\nYou will be kicked if you fail the captcha or do not answer in time, but you may re-join using the same invite link to try again.",
         "MEMBER_PASSED_THE_CAPTCHA": "{0} passed the captcha.",
         "USER_INFORMATIONS": "**__User information:__**\n\n**Name:** {0}\n**Id:** {1}",
-        "DATE": "at {0}" ,
+        "DATE": "User joined the server at {0} UTC" ,
         "MEMBER_FAILED_THE_CAPTCHA": "{0} failed the captcha.",
         "MEMBER_FAILED_THE_CAPTCHA_REASON": "Reason : You failed the captcha. You may re-join the server with the same invite link to try again.",
         "MEMBER_FAILED_THE_CAPTCHA_REASON_LOG": "**Reason :** They failed the captcha.\n\n**__User information:__**\n\n**Name:** {0}\n**Id:** {1}",
