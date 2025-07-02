@@ -37,7 +37,7 @@ class ReVerifyCog(commands.Cog, name="re-verify"):
         logChannel = data["logChannel"]
         captchaChannel = self.bot.get_channel(data["captchaChannel"])
 
-        memberTime = f"{member.joined_at.year}-{member.joined_at.month}-{member.joined_at.day} {member.joined_at.hour}:{member.joined_at.minute}:{member.joined_at.second}"
+        memberTime = f"{member.joined_at.year}-{member.joined_at.month:02d}-{member.joined_at.day:02d} {member.joined_at.hour:02d}:{member.joined_at.minute:02d}:{member.joined_at.second:02d}"
 
         if data["captcha"] is True:
             logger.info(f"User {member} marked for re-verification, starting captcha generation")
