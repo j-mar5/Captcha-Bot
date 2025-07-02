@@ -118,13 +118,14 @@ class SettingsCog(commands.Cog, name="settings command"):
             # Respond
             embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "logs", "LOG_CHANNEL_DISABLED"), 
                                   description = self.bot.translate.msg(inter.guild_id, "logs", "LOG_CHANNEL_DISABLED_DESCRIPTION"), color = 0xe00000) # Red
-            await inter.response.send_message(embed=embed)
+            return await inter.response.send_message(embed=embed)
+            
 
         # Only allow text channels to be specified
         if not isinstance(channel, discord.TextChannel):
             embed = discord.Embed(title=self.bot.translate.msg(inter.guild_id, "logs", "LOG_CHANNEL_WRONG_TYPE"), 
                                   description=self.bot.translate.msg(inter.guild_id, "logs", "LOG_CHANNEL_WRONG_TYPE_DESCRIPTION"), color=0xe00000) # Red
-            await inter.response.send_message(embed=embed, ephemeral=True)
+            return await inter.response.send_message(embed=embed, ephemeral=True)
         # Verify we have permissions
         chan_perms = channel.overwrites_for(inter.guild.me)
         if not chan_perms.send_messages or not chan_perms.embed_links:
@@ -137,7 +138,7 @@ class SettingsCog(commands.Cog, name="settings command"):
             except discord.Forbidden:
                 embed = discord.Embed(title=self.bot.translate.msg(inter.guild_id, "logs", "LOG_CHANNEL_MISSING_PERMISSIONS", 
                                                                description="LOG_CHANNEL_MISSING_PERMISSIONS_DESCRIPTION"))
-                await inter.response.send_message(embed=embed, ephemeral=True)
+                return await inter.response.send_message(embed=embed, ephemeral=True)
         data = getConfig(inter.guild_id)
         # Add modifications
         data["logChannel"] = channel.id
@@ -146,6 +147,7 @@ class SettingsCog(commands.Cog, name="settings command"):
         # Respond
         embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "logs", "LOG_CHANNEL_ENABLED"), 
                               description = self.bot.translate.msg(inter.guild_id, "logs", "LOG_CHANNEL_ENABLED_DESCRIPTION"), color = 0x2fa737) # Green
+        return await inter.response.send_message(embed=embed)
         
 
         
