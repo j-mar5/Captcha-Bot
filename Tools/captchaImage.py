@@ -17,10 +17,6 @@ async def generateCaptcha(member: discord.Member, text: str):
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype(font= "Tools/arial.ttf", size= 60)
 
-    numbers = '23456789' # restricted choices to avoid ambiguous characters
-    letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ' # restricted choices to avoid ambiguous characters
-    text = ' '.join(random.choice(numbers + letters) for _ in range(6)) # + string.ascii_lowercase + string.digits
-
     # Center the text
     W, H = (350,100)
     w = draw.textlength(text, font= font)
