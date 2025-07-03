@@ -150,6 +150,32 @@ class SettingsCog(commands.Cog, name="settings command"):
                               description = self.bot.translate.msg(inter.guild_id, "logs", "LOG_CHANNEL_ENABLED_DESCRIPTION"), color = 0x2fa737) # Green
         return await inter.response.send_message(embed=embed)
         
+    # /config captcha enabled
+    @config_captcha_group.command(name="enabled", description="Enables or disables the captcha protection. The protection must be fully setup (/config captcha setup) first.")
+    async def enabled(self, inter: discord.Interaction, enabled: bool):
+        if not enabled:
+            # Read configuration.json
+            data = getConfig(inter.guild_id)
+
+            # Add modifications
+            data["captcha"] = False
+            # Save
+            updateConfig(inter.guild_id, data)
+            # Respond
+            embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "global", "SUCCESS"), 
+                                  description = self.bot.translate.msg(inter.guild_id, "setup", "CAPTCHA_WAS_DELETED_WITH_SUCCESS_DESCRIPTION"), color = 0x2fa737) # Green
+            return await inter.response.send_message(embed=embed)
+        else:
+            # Check that all configuration parameters are set and valid (e.g. roles, channels) before setting captcha true
+            raise NotImplementedError("Feature not yet implemented")
+
+    @config_captcha_group.command(name="setup", description="Configures the captcha protection. If a parameter is not specified for an argument, the bot will attempt to automatically set it for you.")
+    @app_commands.describe(verification_channel = "The channel used to send CAPTCHA challenges and receive responses from users in.")
+    @app_commands.describe(temporary_role = "The temporary role given to users upon join (blocks access to the server until CAPTCHA is complete).")
+    async def setup(self, inter: discord.Interaction, verification_channel: Optional[discord.TextChannel] = None, temporary_role: Optional[discord.Role] = None):
+        raise NotImplementedError("Feature not yet implemented")
+        
+
 
         
 

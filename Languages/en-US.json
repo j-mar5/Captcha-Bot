@@ -162,7 +162,7 @@
         "USER_HAS_EXCEEDED_THE_RESPONSE_TIME": "{0} has exceeded the response time (30s).",
         "DELETION_OF_THE_CAPTCHA_PROETECTION": "Deletion of captcha protection...",
         "CAPTCHA_WAS_DELETED_WITH_SUCCESS": "CAPTCHA WAS DELETED SUCCESSFULLY",
-        "CAPTCHA_WAS_DELETED_WITH_SUCCESS_DESCRIPTION": "The captcha was deleted successfully.",
+        "CAPTCHA_WAS_DELETED_WITH_SUCCESS_DESCRIPTION": "Captcha protection was deactivated successfully.",
         "CAPTCHA_DELETION_ERROR": "**CAPTCHA DELETION FAILED**",
         "CAPTCHA_DELETION_ERROR_DESCRIPTION": "**Error(s) detected during the deletion of the ** `{0}`.",
         "INVALID_ARGUMENT": "The setup argument must be on or off\nFollow the example: `{prefix}setup <on/off>`"

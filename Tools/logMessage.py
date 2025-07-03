@@ -1,4 +1,5 @@
 import json
+from discord import Forbidden
 from Tools.utils import getConfig, updateConfig
 
 async def sendLogMessage(self, event, channel, embed, messageFile=None):
@@ -20,11 +21,8 @@ async def sendLogMessage(self, event, channel, embed, messageFile=None):
             perms = channel.overwrites_for(event.guild.default_role)
             perms.read_messages=False
             await channel.set_permissions(event.guild.default_role, overwrite=perms)
-
-        except Exception as error:
-            if error.code == 50013:
-                return await event.channel.send(f"**Log error :** I cannot create a log channel ({error.text}).")
-            return await event.channel.send(error.text)
+        except Forbidden:
+            return await event.channel.send(f"**Log error :** Cannot create a log channel.")
 
         # Get configuration.json data 
         data = getConfig(channel.guild.id)
