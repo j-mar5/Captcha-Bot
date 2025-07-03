@@ -151,7 +151,7 @@ class SettingsCog(commands.Cog, name="settings command"):
         return await inter.response.send_message(embed=embed)
         
     # /config captcha enabled
-    @config_captcha_group.command(name="enabled", description="Enables or disables the captcha protection. The protection must be fully setup (/config captcha setup) first.")
+    @config_captcha_group.command(name="enabled", description="Enables or disables captcha. The protection must be fully setup (/config captcha setup) first.")
     async def enabled(self, inter: discord.Interaction, enabled: bool):
         if not enabled:
             # Read configuration.json
