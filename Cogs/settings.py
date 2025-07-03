@@ -169,9 +169,9 @@ class SettingsCog(commands.Cog, name="settings command"):
             # Check that all configuration parameters are set and valid (e.g. roles, channels) before setting captcha true
             raise NotImplementedError("Feature not yet implemented")
 
-    @config_captcha_group.command(name="setup", description="Configures the captcha protection. If a parameter is not specified for an argument, the bot will attempt to automatically set it for you.")
+    @config_captcha_group.command(name="setup", description="Configures the captcha protection. Bot attempts to pre-fill empty parameters.")
     @app_commands.describe(verification_channel = "The channel used to send CAPTCHA challenges and receive responses from users in.")
-    @app_commands.describe(temporary_role = "The temporary role given to users upon join (blocks access to the server until CAPTCHA is complete).")
+    @app_commands.describe(temporary_role = "The temporary role given to users upon join.")
     async def setup(self, inter: discord.Interaction, verification_channel: Optional[discord.TextChannel] = None, temporary_role: Optional[discord.Role] = None):
         raise NotImplementedError("Feature not yet implemented")
         
