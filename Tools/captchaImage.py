@@ -85,5 +85,14 @@ async def generateCaptcha(member: discord.Member, text: str):
 
     # Save
     logger.debug("...success!")
-    # image.save(f"{folderPath}/output/{captchaName}_2.png")
-    return image
+    image.save(f"{folderPath}/output/{captchaName}_2.png")
+    return discord.File(f"{folderPath}/output/{captchaName}_2.png")
+
+async def cleanup(member: discord.Member):
+    ID = member.id
+    folderPath = f"captchaFolder/{member.guild.id}/captcha_{ID}"
+    logger.debug("Removing image files on disk")
+    try:
+        shutil.rmtree(folderPath)
+    except Exception as error:
+        logger.error(f"Delete captcha file failed {error}")

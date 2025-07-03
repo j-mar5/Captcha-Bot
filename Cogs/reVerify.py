@@ -12,7 +12,7 @@ from discord import app_commands
 from discord.utils import get
 from PIL import ImageFont, ImageDraw, Image
 from Tools.utils import getConfig
-from Tools.captchaImage import generateCaptcha
+from Tools.captchaImage import generateCaptcha, cleanup
 from Tools.logMessage import sendLogMessage
 from loguru import logger
 
@@ -49,7 +49,7 @@ class ReVerifyCog(commands.Cog, name="re-verify"):
             
             # logger.info("Generating captcha")
             # logger.debug("Creating background of captcha")
-            # # Create captcha
+            # Create captcha
             # image = np.zeros(shape= (100, 350, 3), dtype= np.uint8)
 
             # # Create image 
@@ -131,17 +131,14 @@ class ReVerifyCog(commands.Cog, name="re-verify"):
 
             # # Send captcha
             # logger.debug("...success! Sending captcha image to user")
+
             numbers = '23456789' # restricted choices to avoid ambiguous characters
             letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ' # restricted choices to avoid ambiguous characters
             text = ' '.join(random.choice(numbers + letters) for _ in range(6)) # + string.ascii_lowercase + string.digits
-            captchaFile = await generateCaptcha(member=member, text=text)
+            captchaFile = await generateCaptcha(member, text)
+
             captchaEmbed = await captchaChannel.send(self.bot.translate.msg(member.guild.id, "reVerify", "REVERIFICATION_MESSAGE").format(member.mention), file= captchaFile)
-            # Remove captcha folder
-            logger.debug("...success! Removing image files on disk")
-            try:
-                shutil.rmtree(folderPath)
-            except Exception as error:
-                logger.error(f"Delete captcha file failed {error}")
+            await cleanup(member)
             await interaction.edit_original_response(content=f"Prompted {member.display_name} ({member.global_name}) for a re-captcha!")
 
             # Check if it is the right user
