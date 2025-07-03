@@ -84,6 +84,6 @@ async def generateCaptcha(member: discord.Member, text: str):
                 pixels[i,j] = (90, 90, 90)
 
     # Save
-    logger.debug("...success! Saving final captcha image to disk")
-    image.save(f"{folderPath}/output/{captchaName}_2.png")
-    return f"{folderPath}/output/{captchaName}_2.png"
+    logger.debug("...success!")
+    # image.save(f"{folderPath}/output/{captchaName}_2.png")
+    return image
