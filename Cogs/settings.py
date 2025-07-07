@@ -276,7 +276,7 @@ class SettingsCog(commands.Cog, name="settings command"):
         data["temporaryRole"] = temporary_role.id
         data["captchaChannel"] = verification_channel.id
         data["logChannel"] = log_channel.id
-        data["roleGivenAfterCaptcha"]
+        data["roleGivenAfterCaptcha"] = role_after_captcha.id
 
 
 
