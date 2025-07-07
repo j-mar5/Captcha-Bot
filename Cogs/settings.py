@@ -282,6 +282,9 @@ class SettingsCog(commands.Cog, name="settings command"):
         updateConfig(inter.guild_id, data)
         logger.debug("...success!")
 
+        embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "setup", "CAPTCHA_WAS_SET_UP_WITH_SUCCESS"), description = self.bot.translate.msg(ctx.guild.id, "setup", "CAPTCHA_WAS_SET_UP_WITH_SUCCESS_DESCRIPTION"), color = 0x2fa737) # Green
+        await inter.response.send_message()
+
 # ------------------------ BOT ------------------------ #  
 
 async def setup(bot):
