@@ -122,6 +122,9 @@ class OnJoinCog(commands.Cog, name="on join"):
                         # can't send dm to user
                         pass
                     await member.kick()
+                    embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_HAS_BEEN_KICKED").format(member), description = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_FAILED_THE_CAPTCHA_REASON_LOG").format(member, member.id), color = 0xff0000)
+                    embed.set_footer(text= self.bot.translate.msg(member.guild.id, "onJoin", "DATE").format(memberTime))
+                    await sendLogMessage(self, event=member, channel=logChannel, embed=embed)
 
                     time.sleep(3)
                     try:
@@ -135,9 +138,7 @@ class OnJoinCog(commands.Cog, name="on join"):
                         logger.info("Delete message in verification channel failed, check permissions")
                         pass
                     # Logs
-                    embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_HAS_BEEN_KICKED").format(member), description = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_FAILED_THE_CAPTCHA_REASON_LOG").format(member, member.id), color = 0xff0000)
-                    embed.set_footer(text= self.bot.translate.msg(member.guild.id, "onJoin", "DATE").format(memberTime))
-                    await sendLogMessage(self, event=member, channel=logChannel, embed=embed)
+                    
 
             except (asyncio.TimeoutError):
                 embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "TIME_IS_OUT"), description = self.bot.translate.msg(member.guild.id, "onJoin", "USER_HAS_EXCEEDED_THE_RESPONSE_TIME").format(member.mention), color = 0xff0000)

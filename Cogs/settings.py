@@ -25,10 +25,10 @@ class SettingsCog(commands.Cog, name="settings command"):
     #   ├── view (view)
     #   ├── set (config_set_group)
     #   │       ├── language (language)
-    #   │       ├── log_channel
-    #   │       └── min_account_age
+    #   │       ├── log_channel (log_channel)
+    #   │       └── min_account_age TODO
     #   └── captcha (config_captcha_group)
-    #       ├── enabled
+    #       ├── enabled (enabled)
     #       ├── verification_channel
     #       ├── verified_role TODO
     #       ├── maintain_permissions_on_new_channel TODO
@@ -185,6 +185,7 @@ class SettingsCog(commands.Cog, name="settings command"):
                                       description=self.bot.translate.msg(inter.guild_id, "settings", "SETUP_ROLE_CHECK_FAILURE"), color=0xe00000) # Red
                 return await inter.response.send_message(embed=embed, ephemeral=True)
             # If configured, check post-captcha role exists
+            logger.info(f"roleGivenAfterCaptcha: {data["roleGivenAfterCaptcha"]}")
             if data["roleGivenAfterCaptcha"] != "false":
                 configuredRole = data["roleGivenAfterCaptcha"]
                 actualRole = inter.guild.get_role(configuredRole)
@@ -242,6 +243,21 @@ class SettingsCog(commands.Cog, name="settings command"):
                 return await inter.response.send_message(embed=embed)
             verification_channel = captchaChannel
             logger.info("...success!")
+        # Verify we have permissions for the passed-in channel
+        chan_perms = verification_channel.overwrites_for(inter.guild.me)
+        if not chan_perms.send_messages or not chan_perms.embed_links or not chan_perms.view_channel or not chan_perms.manage_messages:
+            # Try to fix them (if we have admin, for instance)
+            try:
+                chan_perms.view_channel = True
+                chan_perms.send_messages = True
+                chan_perms.embed_links = True
+                chan_perms.manage_messages = True
+                await verification_channel.set_permissions(inter.guild.me, overwrite=chan_perms)
+            # Forbidden - no access, must error out
+            except discord.Forbidden:
+                embed = discord.Embed(title=self.bot.translate.msg(inter.guild_id, "global", "ERROR"), 
+                                                               description=self.bot.translate.msg(inter.guild_id, "setup", "TEMPORARY_CHANNEL_SELECT_ERROR_DESCRIPTION"))
+                return await inter.response.send_message(embed=embed, ephemeral=True)
         if log_channel is None:
              # Create log channel
             logger.info('Creating log channel and applying permissions')
@@ -257,6 +273,20 @@ class SettingsCog(commands.Cog, name="settings command"):
                 return await inter.response.send_message(embed=embed)
             log_channel = logChannel
             logger.info("...success!")
+        # Verify we have permissions for the passed-in channel
+        chan_perms = log_channel.overwrites_for(inter.guild.me)
+        if not chan_perms.send_messages or not chan_perms.embed_links or not chan_perms.view_channel:
+            # Try to fix them (if we have admin, for instance)
+            try:
+                chan_perms.view_channel = True
+                chan_perms.send_messages = True
+                chan_perms.embed_links = True
+                await verification_channel.set_permissions(inter.guild.me, overwrite=chan_perms)
+            # Forbidden - no access, must error out
+            except discord.Forbidden:
+                embed = discord.Embed(title=self.bot.translate.msg(inter.guild_id, "global", "ERROR"), 
+                                                               description=self.bot.translate.msg(inter.guild_id, "setup", "LOG_CHANNEL_SELECT_ERROR_DESCRIPTION"))
+                return await inter.response.send_message(embed=embed, ephemeral=True)
         # by this point both verification_channel and temporary_role should be valid objects of the Role and TextChannel types
         logger.info('Hiding all channels from the temporary role')
         await inter.response.defer()
