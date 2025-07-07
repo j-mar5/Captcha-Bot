@@ -3,7 +3,7 @@
         "BOT_CREATOR": "Captcha Bot",
         "SUCCESS": "**Success**",
         "ERROR": "**Error**",
-        "ERROR_OCCURED": "An error was occcured : `{0}`"
+        "ERROR_OCCURED": "An error has occcured : `{0}`"
     },
     "events": {
         "COMMAND_IN_COOLDOWN_DAY": "This command has a cooldown, please wait {0} day(s) before trying again.",
@@ -147,7 +147,10 @@
         "ANTI_NUDITY": "**ANTI NUDITY** - `({0}antinudity <true/false>)`",
         "ANTI_NUDITY_DESCRIPTION": "Anti nudity image enabled: **{0}**",
         "ANTI_PROFANITY": "**ANTI PROFANITY** - `({0}antiprofanity <true/false>)`",
-        "ANTI_PROFANITY_DESCRIPTION": "Anti profanity enabled: **{0}**"
+        "ANTI_PROFANITY_DESCRIPTION": "Anti profanity enabled: **{0}**",
+        "SETUP_CHANNEL_CHECK_FAILURE": "Captcha channel was not found. Please reconfigure the captcha channel or /captcha setup again.",
+        "SETUP_ROLE_CHECK_FAILURE": "Verification role was not found. Please reconfigure the captcha role or /captcha setup again.",
+        "SETUP_POST_ROLE_CHECK_FAILURE": "Role to be given after captcha was not found. Please reconfigure the role after captcha or /captcha setup again."
     },
     "setup": {
         "DO_YOU_WANT_TO_SET_UP_THE_CAPTCHA_PROTECTION": "**ARE YOU SURE YOU WANT TO SET UP THE CAPTCHA PROTECTION ?**",
@@ -157,7 +160,10 @@
         "CAPTCHA_WAS_SET_UP_WITH_SUCCESS": "**CAPTCHA WAS SET UP SUCCESSFULLY**",
         "CAPTCHA_WAS_SET_UP_WITH_SUCCESS_DESCRIPTION": "The captcha was set up successfully.",
         "CHANNEL_ACCESS_WARNING": "WARNING: Missing Permissions",
-        "CHANNEL_ACCESS_WARNING_DESCRIPTION": "At least one channel was skipped due to missing permissions. Please check the channel permissions to ensure that all non-verification channels are denied read access to the unverified role.",
+        "CHANNEL_ACCESS_WARNING_DESCRIPTION": "Could not set permissions for at least one channel due to missing permissions. Please check the channel permissions to deny read access to the temporary role (default is 'unverified'). Affected channels: `{0}`",
+        "TEMPORARY_ROLE_CREATE_ERROR_DESCRIPTION": "Unable to create a temporary role. Please ensure the bot has the `Manage Roles` permission, or specify an existing role for the temporary role.",
+        "TEMPORARY_CHANNEL_CREATE_ERROR_DESCRIPTION": "Unable to create a channel necessary for the captcha operation. Please ensure the bot has the `Manage Channels` permission, or specify existing channels for the captcha process.",
+        "TEMPORARY_ROLE_SELECT_ERROR_DESCRIPTION": "Unable to find the temporary role specified. Please verify the role and try again.",
         "TIME_IS_OUT": "**CONFIRMATION TIMEOUT**",
         "USER_HAS_EXCEEDED_THE_RESPONSE_TIME": "{0} has exceeded the response time (30s).",
         "DELETION_OF_THE_CAPTCHA_PROETECTION": "Deletion of captcha protection...",
