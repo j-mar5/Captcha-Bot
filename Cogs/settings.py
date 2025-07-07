@@ -278,15 +278,8 @@ class SettingsCog(commands.Cog, name="settings command"):
         data["logChannel"] = log_channel.id
         data["roleGivenAfterCaptcha"] = role_after_captcha.id
 
-
-
-        
-
-
-        
-
-    
-
+        updateConfig(inter.guild_id, data)
+        logger.debug("...success!")
 
 # ------------------------ BOT ------------------------ #  
 
