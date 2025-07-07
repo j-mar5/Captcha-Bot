@@ -257,13 +257,14 @@ class SettingsCog(commands.Cog, name="settings command"):
         await inter.response.defer()
         missedChannels = []
 
-        try:
-            for channel in inter.guild.channels:
+
+        for channel in inter.guild.channels:
+            try:
                 logger.debug(f'Starting to override the permissions for {channel}.')
                 await channel.set_permissions(temporary_role, overwrite=discord.PermissionOverwrite(read_messages = False))
-        except discord.Forbidden as error:
-                            logger.error(f"Failed to change permissions (likely missing access to channel {channel} ({channel.id}))")
-                            missedChannels.append(channel.name)
+            except discord.Forbidden:
+                logger.error(f"Failed to change permissions (likely missing access to channel {channel} ({channel.id}))")
+                missedChannels.append(channel.name)
         if len(missedChannels) > 0:
             errors = ", ".join(missedChannels)
             embed = discord.Embed(title=self.bot.translate.msg(inter.guild_id, "setup", "CHANNEL_ACCESS_WARNING"), description=self.bot.translate.msg(inter.guild_id, "setup", "CHANNEL_ACCESS_WARNING_DESCRIPTION").format(errors), color=0xffff00) # Yellow
@@ -276,8 +277,8 @@ class SettingsCog(commands.Cog, name="settings command"):
         data["temporaryRole"] = temporary_role.id
         data["captchaChannel"] = verification_channel.id
         data["logChannel"] = log_channel.id
-        data["roleGivenAfterCaptcha"] = role_after_captcha.id
-
+        if role_after_captcha != None:
+            data["roleGivenAfterCaptcha"] = role_after_captcha.id
         updateConfig(inter.guild_id, data)
         logger.debug("...success!")
 
