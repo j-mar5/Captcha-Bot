@@ -29,11 +29,11 @@ class SettingsCog(commands.Cog, name="settings command"):
     #   │       └── min_account_age TODO
     #   └── captcha (config_captcha_group)
     #       ├── enabled (enabled)
-    #       ├── verification_channel
+    #       ├── verification_channel TODO
     #       ├── verified_role TODO
     #       ├── maintain_permissions_on_new_channel TODO
     #       ├── setup (setup)
-    #       └── temp_role
+    #       └── temp_role TODO
     config_group = app_commands.Group(name="config", description="View and set configuration", guild_only=True)
     config_set_group = app_commands.Group(name="set", description="Modify configuration", parent=config_group)
     config_captcha_group = app_commands.Group(name="captcha", description="Modify captcha configuration", parent=config_group)
