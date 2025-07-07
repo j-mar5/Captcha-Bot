@@ -185,9 +185,7 @@ class SettingsCog(commands.Cog, name="settings command"):
                                       description=self.bot.translate.msg(inter.guild_id, "settings", "SETUP_ROLE_CHECK_FAILURE"), color=0xe00000) # Red
                 return await inter.response.send_message(embed=embed, ephemeral=True)
             # If configured, check post-captcha role exists
-            info = data["roleGivenAfterCaptcha"]
-            logger.info(f"roleGivenAfterCaptcha: {info}")
-            if data["roleGivenAfterCaptcha"] != "false":
+            if data["roleGivenAfterCaptcha"] != False:
                 configuredRole = data["roleGivenAfterCaptcha"]
                 actualRole = inter.guild.get_role(configuredRole)
                 if actualRole is None:
