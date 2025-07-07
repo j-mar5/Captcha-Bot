@@ -185,7 +185,7 @@ class SettingsCog(commands.Cog, name="settings command"):
                                       description=self.bot.translate.msg(inter.guild_id, "settings", "SETUP_ROLE_CHECK_FAILURE"), color=0xe00000) # Red
                 return await inter.response.send_message(embed=embed, ephemeral=True)
             # If configured, check post-captcha role exists
-            if data["roleGivenAfterCaptcha"] is not "false":
+            if data["roleGivenAfterCaptcha"] != "false":
                 configuredRole = data["roleGivenAfterCaptcha"]
                 actualRole = inter.guild.get_role(configuredRole)
                 if actualRole is None:
@@ -231,7 +231,7 @@ class SettingsCog(commands.Cog, name="settings command"):
             logger.info('Creating verification channel and applying permissions')
             overwrites = {
                 inter.guild.default_role: discord.PermissionOverwrite(read_messages = False),
-                temporary_role.id: discord.PermissionOverwrite(read_messages = True, send_messages = True) 
+                temporary_role: discord.PermissionOverwrite(read_messages = True, send_messages = True) 
             }
             try:
                 captchaChannel = await inter.guild.create_text_channel('verification', slowmode_delay=5, overwrites=overwrites)
@@ -276,6 +276,7 @@ class SettingsCog(commands.Cog, name="settings command"):
         data["temporaryRole"] = temporary_role.id
         data["captchaChannel"] = verification_channel.id
         data["logChannel"] = log_channel.id
+        data["roleGivenAfterCaptcha"]
 
 
 
