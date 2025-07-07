@@ -30,9 +30,9 @@ class SettingsCog(commands.Cog, name="settings command"):
     #   └── captcha (config_captcha_group)
     #       ├── enabled
     #       ├── verification_channel
-    #       ├── verified_role
-    #       ├── maintain_permissions_on_new_channel
-    #       ├── setup [pass in role & channel, or default to current hard-coded values]
+    #       ├── verified_role TODO
+    #       ├── maintain_permissions_on_new_channel TODO
+    #       ├── setup (setup)
     #       └── temp_role
     config_group = app_commands.Group(name="config", description="View and set configuration", guild_only=True)
     config_set_group = app_commands.Group(name="set", description="Modify configuration", parent=config_group)
@@ -232,7 +232,7 @@ class SettingsCog(commands.Cog, name="settings command"):
             overwrites = {
                 inter.guild.default_role: discord.PermissionOverwrite(read_messages = False),
                 temporary_role: discord.PermissionOverwrite(read_messages = True, send_messages = True),
-                inter.guild.me: discord.PermissionOverwrite(read_messages=True, send_messages = True, embed_links = True) 
+                inter.guild.me: discord.PermissionOverwrite(read_messages=True, send_messages = True, embed_links = True, manage_messages = True) 
             }
             try:
                 captchaChannel = await inter.guild.create_text_channel('verification', slowmode_delay=5, overwrites=overwrites)

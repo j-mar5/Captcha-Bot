@@ -126,11 +126,13 @@ class OnJoinCog(commands.Cog, name="on join"):
                     time.sleep(3)
                     try:
                         await captchaEmbed.delete()
-                    except discord.errors.NotFound:
+                    except (discord.errors.NotFound, discord.Forbidden):
+                        logger.info("Delete message in verification channel failed, check permissions")
                         pass
                     try:
                         await msg.delete()
-                    except discord.errors.NotFound:
+                    except (discord.errors.NotFound, discord.Forbidden):
+                        logger.info("Delete message in verification channel failed, check permissions")
                         pass
                     # Logs
                     embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_HAS_BEEN_KICKED").format(member), description = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_FAILED_THE_CAPTCHA_REASON_LOG").format(member, member.id), color = 0xff0000)
