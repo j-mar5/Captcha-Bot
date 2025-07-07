@@ -231,7 +231,8 @@ class SettingsCog(commands.Cog, name="settings command"):
             logger.info('Creating verification channel and applying permissions')
             overwrites = {
                 inter.guild.default_role: discord.PermissionOverwrite(read_messages = False),
-                temporary_role: discord.PermissionOverwrite(read_messages = True, send_messages = True) 
+                temporary_role: discord.PermissionOverwrite(read_messages = True, send_messages = True),
+                inter.guild.me: discord.PermissionOverwrite(read_messages=True, send_messages = True, embed_links = True) 
             }
             try:
                 captchaChannel = await inter.guild.create_text_channel('verification', slowmode_delay=5, overwrites=overwrites)
@@ -244,8 +245,12 @@ class SettingsCog(commands.Cog, name="settings command"):
         if log_channel is None:
              # Create log channel
             logger.info('Creating log channel and applying permissions')
+            log_overwrites = {
+                inter.guild.default_role: discord.PermissionOverwrite(read_messages = False),
+                inter.guild.me: discord.PermissionOverwrite(read_messages=True, send_messages = True, embed_links = True) 
+            }
             try:
-                logChannel = await inter.guild.create_text_channel('captcha-logs', overwrites={inter.guild.default_role: discord.PermissionOverwrite(read_messages = False)})
+                logChannel = await inter.guild.create_text_channel('captcha-logs', overwrites=log_overwrites)
             except discord.Forbidden:
                 embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "global", "ERROR"), 
                                   description = self.bot.translate.msg(inter.guild_id, "setup", "TEMPORARY_CHANNEL_CREATE_ERROR_DESCRIPTION"), color=0xe00000) # Red
@@ -259,11 +264,15 @@ class SettingsCog(commands.Cog, name="settings command"):
 
 
         for channel in inter.guild.channels:
+            #skip the channels we just made as their permissions should already be set correctly
+            if channel.id == verification_channel.id or channel.id == log_channel.id:
+                logger.debug(f"Skipping {channel} since its ID matches one of the channels we just created")
+                continue
             try:
                 logger.debug(f'Starting to override the permissions for {channel}.')
                 await channel.set_permissions(temporary_role, overwrite=discord.PermissionOverwrite(read_messages = False))
             except discord.Forbidden:
-                logger.error(f"Failed to change permissions (likely missing access to channel {channel} ({channel.id}))")
+                logger.info(f"Failed to change permissions (likely missing access to channel {channel} ({channel.id}))")
                 missedChannels.append(channel.name)
         if len(missedChannels) > 0:
             errors = ", ".join(missedChannels)
@@ -282,7 +291,7 @@ class SettingsCog(commands.Cog, name="settings command"):
         updateConfig(inter.guild_id, data)
         logger.debug("...success!")
 
-        embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "setup", "CAPTCHA_WAS_SET_UP_WITH_SUCCESS"), description = self.bot.translate.msg(ctx.guild.id, "setup", "CAPTCHA_WAS_SET_UP_WITH_SUCCESS_DESCRIPTION"), color = 0x2fa737) # Green
+        embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "setup", "CAPTCHA_WAS_SET_UP_WITH_SUCCESS"), description = self.bot.translate.msg(inter.guild_id, "setup", "CAPTCHA_WAS_SET_UP_WITH_SUCCESS_DESCRIPTION"), color = 0x2fa737) # Green
         await inter.response.send_message()
 
 # ------------------------ BOT ------------------------ #  
