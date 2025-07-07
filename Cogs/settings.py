@@ -263,7 +263,7 @@ class SettingsCog(commands.Cog, name="settings command"):
                 await channel.set_permissions(temporary_role, overwrite=discord.PermissionOverwrite(read_messages = False))
         except discord.Forbidden as error:
                             logger.error(f"Failed to change permissions (likely missing access to channel {channel} ({channel.id}))")
-                            missedChannels.append(channel)
+                            missedChannels.append(channel.name)
         if len(missedChannels) > 0:
             errors = ", ".join(missedChannels)
             embed = discord.Embed(title=self.bot.translate.msg(inter.guild_id, "setup", "CHANNEL_ACCESS_WARNING"), description=self.bot.translate.msg(inter.guild_id, "setup", "CHANNEL_ACCESS_WARNING_DESCRIPTION").format(errors), color=0xffff00) # Yellow
