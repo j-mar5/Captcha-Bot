@@ -116,7 +116,7 @@ async def verify(self, member, text: str, timeout: int):
         password = text.split(" ")
         password = "".join(password)
         if msg.content == password:
-            logger.debug("...password correct!")
+            logger.info("...password correct!")
             try:
                 await msg.delete()
             except (discord.errors.NotFound, discord.Forbidden):
@@ -124,7 +124,7 @@ async def verify(self, member, text: str, timeout: int):
                 pass
             return ReturnStatus.SUCCESS
         else:
-            logger.debug(f"...password incorrect! Got {msg.content}, expected {password}")
+            logger.info(f"...password incorrect! Got {msg.content}, expected {password}")
             try:
                 await msg.delete()
             except (discord.errors.NotFound, discord.Forbidden):
