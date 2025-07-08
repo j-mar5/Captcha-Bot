@@ -12,7 +12,7 @@ from discord import app_commands
 from discord.utils import get
 from PIL import ImageFont, ImageDraw, Image
 from Tools.utils import getConfig
-from Tools.captchaImage import generateCaptcha, cleanup
+from Tools.captchaUtils import generateCaptcha, cleanup
 from Tools.logMessage import sendLogMessage
 from loguru import logger
 
