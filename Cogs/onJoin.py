@@ -55,27 +55,11 @@ class OnJoinCog(commands.Cog, name="on join"):
             logger.info("Giving new member the unverified role")
             getrole = get(member.guild.roles, id = data["temporaryRole"])
             await member.add_roles(getrole)
-            
-            
-
-            # Check if it is the right user
-            # TODO: need to delete messages if not
-            # def check(message):
-            #     if message.author == member and  message.content != "":
-            #         return message.content
-
-            # try:
-                # logger.info(f"Starting timer for {member}")
-                # msg = await self.bot.wait_for('message', timeout=300.0, check=check)
-                # logger.info(f"Message received from {member}, checking captcha")
-                # # Check the captcha
-                # password = text.split(" ")
-                # password = "".join(password)
-                # if msg.content == password:
 
             # 3 chances to guess correctly
             remaining_attempts = 3
             while 1 > 0:
+                logger.debug("Start on_member_join loop")
                 # Generate a captcha
 
                 numbers = '23456789' # restricted choices to avoid ambiguous characters
@@ -127,8 +111,6 @@ class OnJoinCog(commands.Cog, name="on join"):
                     logger.debug(f"Received failure in checking {member}. remaining_attempts is at {remaining_attempts}")
                     # kick if all attempts have been used
                     if remaining_attempts == 1:
-                        embed = discord.Embed(description=self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_FAILED_THE_CAPTCHA").format(member.mention, remaining_attempts), color=0xca1616) # Red
-                        await captchaChannel.send(embed = embed, delete_after = 5)
                         embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "YOU_HAVE_BEEN_KICKED").format(member.guild.name), description = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_FAILED_THE_CAPTCHA_REASON"), color = 0xff0000)
 
                         try:
@@ -163,7 +145,6 @@ class OnJoinCog(commands.Cog, name="on join"):
                             logger.error("Delete message in verification channel failed, check permissions")
                             pass
                 elif result == captchaUtils.ReturnStatus.TIMEOUT:
-            # except (asyncio.TimeoutError):
                     # immediately kick, likely a bot user
                     embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "TIME_IS_OUT"), description = self.bot.translate.msg(member.guild.id, "onJoin", "USER_HAS_EXCEEDED_THE_RESPONSE_TIME").format(member.mention), color = 0xff0000)
                     await captchaChannel.send(embed = embed, delete_after = 5)
@@ -182,7 +163,7 @@ class OnJoinCog(commands.Cog, name="on join"):
                     # do not continue the loop
                     logger.info("Stopping on_member_join loop on a kick for verification timeout")
                     return
-                logger.debug("End of on_member_join loop reached with no stop condition, restarting")
+                
 
 # ------------------------ BOT ------------------------ #  
 
