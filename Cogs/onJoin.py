@@ -75,7 +75,7 @@ class OnJoinCog(commands.Cog, name="on join"):
 
             # 3 chances to guess correctly
             remaining_attempts = 3
-            while remaining_attempts > 0:
+            while 1 > 0:
                 # Generate a captcha
 
                 numbers = '23456789' # restricted choices to avoid ambiguous characters
@@ -91,6 +91,7 @@ class OnJoinCog(commands.Cog, name="on join"):
                     logger.error(f"Delete captcha file failed {error}")
 
                 # Wait 5 minutes for a response from the user, verify() returns an enum of SUCCESS, FAIL, or TIMEOUT
+                logger.debug(f"Calling verify in on_member_join for {member}, timeout 5 minutes.")
                 result = await captchaUtils.verify(self=self, member=member, text=text, timeout=300)
                 if result == captchaUtils.ReturnStatus.SUCCESS:
                     embed = discord.Embed(description=self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_PASSED_THE_CAPTCHA").format(member.mention), color=0x2fa737) # Green
@@ -119,9 +120,11 @@ class OnJoinCog(commands.Cog, name="on join"):
                     embed.set_footer(text= self.bot.translate.msg(member.guild.id, "onJoin", "DATE").format(memberTime))
                     await sendLogMessage(self, event=member, channel=logChannel, embed=embed)
                     # do not continue the loop
+                    logger.info("Stopping on_member_join loop on successful captcha")
                     return
 
                 elif result == captchaUtils.ReturnStatus.FAIL:
+                    logger.debug(f"Received failure in checking {member}. remaining_attempts is at {remaining_attempts}")
                     # kick if all attempts have been used
                     if remaining_attempts == 0:
                         embed = discord.Embed(description=self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_FAILED_THE_CAPTCHA").format(member.mention, remaining_attempts), color=0xca1616) # Red
@@ -144,13 +147,15 @@ class OnJoinCog(commands.Cog, name="on join"):
                         except (discord.errors.NotFound, discord.Forbidden):
                             logger.error("Delete message in verification channel failed, check permissions")
                             pass
+                        logger.info("Stopping on_member_join loop on a kick for excessive failures")
                         # do not continue the loop
                         return
                     else:
                         # notify of failure, decrement attempts remaining and continue the loop
+                        remaining_attempts -= 1
+                        logger.debug(f"Decremented remaining_attempts, now {remaining_attempts}")
                         embed = discord.Embed(description=self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_FAILED_THE_CAPTCHA").format(member.mention, remaining_attempts), color=0xca1616) # Red
                         await captchaChannel.send(embed = embed, delete_after = 5)
-                        remaining_attempts -= 1
                         time.sleep(3)
                         try:
                             await captchaEmbed.delete()
@@ -174,6 +179,10 @@ class OnJoinCog(commands.Cog, name="on join"):
                     embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_HAS_BEEN_KICKED").format(member), description = self.bot.translate.msg(member.guild.id, "onJoin", "USER_HAS_EXCEEDED_THE_RESPONSE_TIME_LOG").format(member, member.id), color = 0xff0000)
                     embed.set_footer(text= self.bot.translate.msg(member.guild.id, "onJoin", "DATE").format(memberTime))
                     await sendLogMessage(self, event=member, channel=logChannel, embed=embed)
+                    # do not continue the loop
+                    logger.info("Stopping on_member_join loop on a kick for verification timeout")
+                    return
+                logger.debug("End of on_member_join loop reached with no stop condition, restarting")
 
 # ------------------------ BOT ------------------------ #  
 
