@@ -126,7 +126,7 @@ class OnJoinCog(commands.Cog, name="on join"):
                 elif result == captchaUtils.ReturnStatus.FAIL:
                     logger.debug(f"Received failure in checking {member}. remaining_attempts is at {remaining_attempts}")
                     # kick if all attempts have been used
-                    if remaining_attempts == 0:
+                    if remaining_attempts == 1:
                         embed = discord.Embed(description=self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_FAILED_THE_CAPTCHA").format(member.mention, remaining_attempts), color=0xca1616) # Red
                         await captchaChannel.send(embed = embed, delete_after = 5)
                         embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "YOU_HAVE_BEEN_KICKED").format(member.guild.name), description = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_FAILED_THE_CAPTCHA_REASON"), color = 0xff0000)

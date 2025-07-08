@@ -124,7 +124,7 @@ async def verify(self, member, text: str, timeout: int):
                 pass
             return ReturnStatus.SUCCESS
         else:
-            logger.debug(f"...password incorrect! Got {msg}, expected {password}")
+            logger.debug(f"...password incorrect! Got {msg.content}, expected {password}")
             try:
                 await msg.delete()
             except (discord.errors.NotFound, discord.Forbidden):
