@@ -124,6 +124,7 @@ async def verify(self, member, text: str, timeout: int):
                 pass
             return ReturnStatus.SUCCESS
         else:
+            logger.debug(f"...password incorrect! Got {msg}, expected {password}")
             try:
                 await msg.delete()
             except (discord.errors.NotFound, discord.Forbidden):
@@ -131,4 +132,5 @@ async def verify(self, member, text: str, timeout: int):
                 pass
             return ReturnStatus.FAIL
     except (asyncio.TimeoutError):
+        logger.debug("...timed out!")
         return ReturnStatus.TIMEOUT
