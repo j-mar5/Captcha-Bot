@@ -46,6 +46,7 @@ class ReVerifyCog(commands.Cog, name="re-verify"):
             logger.info("Giving new member the unverified role")
             getrole = get(member.guild.roles, id = data["temporaryRole"])
             await member.add_roles(getrole)
+            await interaction.edit_original_response(content=f"Prompted {member.display_name} ({member.global_name}) for a re-captcha!")
 
             # 3 chances to guess correctly
             remaining_attempts = 3
@@ -57,7 +58,7 @@ class ReVerifyCog(commands.Cog, name="re-verify"):
                 letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ' # restricted choices to avoid ambiguous characters
                 text = ' '.join(random.choice(numbers + letters) for _ in range(6)) # + string.ascii_lowercase + string.digits
                 captchaFile = await captchaUtils.generateCaptcha(member, text)
-                captchaEmbed = await captchaChannel.send(self.bot.translate.msg(member.guild.id, "onJoin", "CAPTCHA_MESSAGE").format(member.mention), file= captchaFile)
+                captchaEmbed = await captchaChannel.send(self.bot.translate.msg(member.guild.id, "reVerify", "REVERIFICATION_MESSAGE").format(member.mention), file= captchaFile)
                 # Remove captcha folder
                 logger.debug("...success! Removing image files on disk")
                 try:
@@ -67,7 +68,7 @@ class ReVerifyCog(commands.Cog, name="re-verify"):
 
                 # Wait 24 hours for a response from the user, verify() returns an enum of SUCCESS, FAIL, or TIMEOUT
                 logger.debug(f"Calling verify in reverify for {member}, timeout 24 hours.")
-                result = await captchaUtils.verify(self=self, member=member, text=text, timeout=300)
+                result = await captchaUtils.verify(self=self, member=member, text=text, timeout=86400)
                 if result == captchaUtils.ReturnStatus.SUCCESS:
                     embed = discord.Embed(description=self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_PASSED_THE_CAPTCHA").format(member.mention), color=0x2fa737) # Green
                     await captchaChannel.send(embed = embed, delete_after = 5)
