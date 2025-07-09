@@ -15,7 +15,7 @@ class HelpCog(commands.Cog):
                           description="Show the help page.")
     @app_commands.guild_only()
     @app_commands.default_permissions(manage_messages = True)
-    async def help(self, inter: discord.Interaction, commandName: Optional[str] = None):
+    async def help(self, inter: discord.Interaction, commandName: str):
 
         commandName2 = None
         stop = False
