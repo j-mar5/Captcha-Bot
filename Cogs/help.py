@@ -11,8 +11,7 @@ class HelpCog(commands.Cog):
 
 # ------------------------------------------------------ #  
 
-    @app_commands.command(name = 'help',
-                        description = "Display the help message.")
+    @app_commands.command(name = "help", description = "Display the help message.")
     @commands.cooldown(1, 3, commands.BucketType.member)
     async def help(self, inter: discord.Interaction, commandName: Optional[str] = None):
 
