@@ -15,19 +15,19 @@ class HelpCog(commands.Cog):
                           description="Show the help page.")
     @app_commands.guild_only()
     @app_commands.default_permissions(manage_messages = True)
-    async def help(self, inter: discord.Interaction, commandName: str):
+    async def help(self, inter: discord.Interaction, command_name: str):
 
         commandName2 = None
         stop = False
 
-        if commandName is not None:
+        if command_name is not None:
             for i in self.bot.commands:
-                if i.name == commandName.lower():
+                if i.name == command_name.lower():
                     commandName2 = i
                     break 
                 else:
                     for j in i.aliases:
-                        if j == commandName.lower():
+                        if j == command_name.lower():
                             commandName2 = i
                             stop = True
                             break
