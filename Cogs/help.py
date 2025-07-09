@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from Tools.utils import getGuildPrefix
 from typing import Optional
 
 # ------------------------ COGS ------------------------ #  
@@ -58,7 +57,7 @@ class HelpCog(commands.Cog):
                 await inter.response.send_message(embed=embed)
         else:
 
-            embed = discord.Embed(title=f"__**Help page of {self.bot.user.name.upper()}**__", description="**{prefix}help (command) :**Display the help list or the help data for a specific command.", color=0xdeaa0c)
+            embed = discord.Embed(title=f"__**Help page of {self.bot.user.name.upper()}**__", description="**/help (command) :**Display the help list or the help data for a specific command.", color=0xdeaa0c)
             embed.set_thumbnail(url=f'{str(self.bot.user.display_avatar)}')
             embed.add_field(name=f"__ADMIN :__", value=f"**/config_captcha setup [#verification-channel] [@verification_role] [#log_channel] [@role_after_captcha]:** Set up the captcha protection.\n**/config view :** Display the list of settings.\n**/config_set language <language> :** Change the bot's language.\n**/config_set log_channel <#channel>:** Set the bot's log channel.\n**/config_set captcha enabled <true/false>:** Enable or disable configured captcha protection\n**/reverify <@user>:** Make a user re-verify against the captcha.", inline=False) #**{prefix}giveroleaftercaptcha <role ID/off> :** Give a role after that the user passed the captcha.\n**{prefix}minaccountage <number (hours)> :** set a minimum age to join the server (24 hours by default).\n**{prefix}antinudity <true/false> :** Enable or disable the nudity image protection.\n**{prefix}antiprofanity <true/false> :** Enable or disable the profanity protection.\n**{prefix}antispam <true/false> :** Enable or disable the spam protection.\n**{prefix}allowspam <#channel> (remove) :** Enable or disable the spam protection in a specific channel.\n**{prefix}lock | unlock <#channel/ID> :** Lock/Unlock a channel.\n\n**{prefix}kick <@user/ID> :** Kick the user.\n**{prefix}ban <@user/ID> :** ban the user.\n\n**{prefix}changeprefix <prefix> :** Change the bot's prefix.\n", inline=False)
             embed.set_footer(text="Captcha Bot")

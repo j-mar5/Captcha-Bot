@@ -53,20 +53,9 @@ class SettingsCog(commands.Cog, name="settings command"):
         temporaryRole = data["temporaryRole"]
         roleGivenAfterCaptcha = data["roleGivenAfterCaptcha"]
         minAccountAge = data["minAccountDate"]
-        antispam = data["antiSpam"]
-        allowSpam = data["allowSpam"]
-        antiNudity = data["antiNudity"]
-        antiProfanity =  data["antiProfanity"]
         language =  data["language"]
             
         minAccountAge = int(minAccountAge/3600)
-
-        allowSpam2= ""
-        if len(allowSpam) == 0:
-            allowSpam2 = "None"
-        else:
-            for x in allowSpam:
-                allowSpam2 = f"{allowSpam2}<#{x}>, "
 
         if roleGivenAfterCaptcha is not False:
             roleGivenAfterCaptcha = f"<@&{roleGivenAfterCaptcha}>"
