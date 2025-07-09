@@ -12,7 +12,7 @@ class OnChannelCreate(commands.Cog, name="on channel create"):
         self.bot = bot
 
 # ------------------------------------------------------ #  
-
+# TODO need to make this behavior contingent upon a setting
     @commands.Cog.listener()
     async def on_guild_channel_create(self, channel):
         data = getConfig(channel.guild.id)
