@@ -15,7 +15,7 @@ intents.message_content = True
 bot = commands.Bot(getGuildPrefix, intents = intents)
 
 # HELP
-bot.remove_command("help") # To create a personal help command 
+# bot.remove_command("help") # To create a personal help command 
 
 # Translate
 bot.translate = Translate()

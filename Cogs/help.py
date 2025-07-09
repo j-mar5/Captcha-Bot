@@ -11,8 +11,10 @@ class HelpCog(commands.Cog):
 
 # ------------------------------------------------------ #  
 
-    @app_commands.command(name = "help", description = "Display the help message.")
-    @commands.cooldown(1, 3, commands.BucketType.member)
+    @app_commands.command(name="help", 
+                          description="Show the help page.")
+    @app_commands.guild_only()
+    @app_commands.default_permissions(manage_messages = True)
     async def help(self, inter: discord.Interaction, commandName: Optional[str] = None):
 
         commandName2 = None
