@@ -34,9 +34,9 @@ class SettingsCog(commands.Cog, name="settings command"):
     #       ├── maintain_permissions_on_new_channel TODO
     #       ├── setup (setup)
     #       └── temp_role TODO
-    config_group = app_commands.Group(name="config", description="View and set configuration", guild_only=True)
-    config_set_group = app_commands.Group(name="set", description="Modify configuration", parent=config_group)
-    config_captcha_group = app_commands.Group(name="captcha", description="Modify captcha configuration", parent=config_group)
+    config_group = app_commands.Group(name="config", description="View configuration", guild_only=True)
+    config_set_group = app_commands.Group(name="config_set", description="Modify configuration", guild_only=True)
+    config_captcha_group = app_commands.Group(name="config_captcha", description="Modify captcha configuration",)
 
     # /config view
     @config_group.command(name = 'view',
@@ -216,6 +216,10 @@ class SettingsCog(commands.Cog, name="settings command"):
             await inter.response.send_message("This command can only be run from a text channel, please try again.")
         # Open guild configuration
         data = getConfig(inter.guild_id)
+        if data["captcha"] is True:
+            embed = discord.Embed(title=self.bot.translate.msg(inter.guild_id, "global", "ERROR"), 
+                                  description="Captcha protection is already set up! Disable the captcha first (/config captcha enabled).", color=0xe00000) # Red
+            await inter.response.send_message(embed=embed)
         if temporary_role is None:
             logger.info('Creating the temporary role to be applied to new users')
             try:
