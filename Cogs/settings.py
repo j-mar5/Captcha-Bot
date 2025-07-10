@@ -189,7 +189,7 @@ class SettingsCog(commands.Cog, name="settings command"):
             updateConfig(inter.guild_id, data)
             # Respond
             embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "global", "SUCCESS"), 
-                                  description = self.bot.translate.msg(inter.guild_id, "setup", "Captcha protection was deactivated successfully!"), color = 0x2fa737) # Green
+                                  description = "Captcha protection was deactivated successfully!", color = 0x2fa737) # Green
             return await inter.response.send_message(embed=embed)
 
 
@@ -226,7 +226,7 @@ class SettingsCog(commands.Cog, name="settings command"):
             logger.info('Creating verification channel and applying permissions')
             overwrites = {
                 inter.guild.default_role: discord.PermissionOverwrite(read_messages = False),
-                temporary_role: discord.PermissionOverwrite(read_messages = True, send_messages = True),
+                # temporary_role: discord.PermissionOverwrite(read_messages = True, send_messages = True),
                 inter.guild.me: discord.PermissionOverwrite(read_messages=True, send_messages = True, embed_links = True, manage_messages = True) 
             }
             try:
