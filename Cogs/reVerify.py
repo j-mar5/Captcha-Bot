@@ -27,6 +27,7 @@ class ReVerifyCog(commands.Cog, name="re-verify"):
                           description="Marks a member for re-verification against the captcha.")
     @app_commands.guild_only()
     @app_commands.default_permissions(kick_members=True)
+    @commands.has_permissions(kick_members=True)
     async def reverify(self, interaction: discord.Interaction, member: discord.Member):
         
         if (member.bot):
@@ -36,7 +37,7 @@ class ReVerifyCog(commands.Cog, name="re-verify"):
         # Read configuration.json
         data = getConfig(member.guild.id)
         if data["captcha"] is False:
-            return await interaction.response.send_message(content="Captcha protection is disabled. Please enable it before reverifying a member.")
+            return await interaction.response.send_message(content="Captcha protection is disabled. Please enable it before reverifying a member.", ephemeral=True)
         logChannel = data["logChannel"]
         captchaChannel = self.bot.get_channel(data["captchaChannel"])
 

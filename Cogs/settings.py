@@ -42,6 +42,7 @@ class SettingsCog(commands.Cog, name="settings command"):
     @app_commands.command(name = 'config_view',
                         description="Display the current configuration.")
     @app_commands.default_permissions(manage_guild=True)
+    @commands.has_permissions(manage_guild=True)
     @commands.cooldown(1, 3, commands.BucketType.member)
     @commands.guild_only()
     async def view (self, inter: discord.Interaction):
@@ -75,6 +76,7 @@ class SettingsCog(commands.Cog, name="settings command"):
     @config_set_group.command(name="language", description="Set the bot's language")
     @app_commands.guild_only()
     @app_commands.default_permissions(manage_guild=True)
+    @commands.has_permissions(manage_guild=True)
     async def language(self, inter: discord.Interaction, language: Languages):
         # this is only used internally because I don't want to write a nasty one-liner to iterate the values of the enum above to fit in the structure of this translation method.
         # if adding support, ensure this is in sync with the enum above.
@@ -95,6 +97,7 @@ class SettingsCog(commands.Cog, name="settings command"):
     @config_set_group.command(name="log_channel", description="Set the channel to log bot events to (or disable this function if no channel is specified)")
     @app_commands.guild_only()
     @app_commands.default_permissions(manage_guild=True)
+    @commands.has_permissions(manage_guild=True)
     async def log_channel(self, inter: discord.Interaction, channel: Optional[discord.TextChannel] = None):
         # Disable log if no channel specified
         if channel is None:
@@ -198,6 +201,7 @@ class SettingsCog(commands.Cog, name="settings command"):
 
     @config_captcha_group.command(name="setup", description="Configures the captcha protection. Bot attempts to create empty parameters.")
     @app_commands.default_permissions(administrator=True)
+    @commands.has_permissions(administrator=True)
     @app_commands.describe(verification_channel = "The channel used to send and receive CAPTCHA challenges. (Default: bot creates #verification)")
     @app_commands.describe(temporary_role = "The temporary role given to users upon join. (Default: bot creates \"untested\")")
     @app_commands.describe(role_after_captcha = "The role to give to users upon successful verification (optional)")
