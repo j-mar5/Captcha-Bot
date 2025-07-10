@@ -142,7 +142,7 @@ class SettingsCog(commands.Cog, name="settings command"):
         
     # /config_captcha enable
     @config_captcha_group.command(name="enable", description="Enables captcha protection. The protection must be fully setup (/config captcha setup) first.")
-    async def enable(self, inter: discord.Interaction, enabled: bool):
+    async def enable(self, inter: discord.Interaction):
             # Check that all configuration parameters are set and valid (e.g. roles, channels) before setting captcha true
             # Read configuration.json
             data = getConfig(inter.guild_id)
@@ -231,15 +231,18 @@ class SettingsCog(commands.Cog, name="settings command"):
             }
             try:
                 captchaChannel = await inter.guild.create_text_channel('verification', slowmode_delay=5, overwrites=overwrites)
-            except discord.Forbidden:
+            except discord.Forbidden as e:
+                logger.warning(f"Failed to create verification channel: {e.text}")
                 embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "global", "ERROR"), 
                                   description = self.bot.translate.msg(inter.guild_id, "setup", "TEMPORARY_CHANNEL_CREATE_ERROR_DESCRIPTION"), color=0xe00000) # Red
                 return await inter.response.send_message(embed=embed)
             verification_channel = captchaChannel
             logger.info("...success!")
         # Verify we have permissions for the passed-in channel
+        logger.info("Checking permissions for verification channel")
         chan_perms = verification_channel.overwrites_for(inter.guild.me)
         if not chan_perms.send_messages or not chan_perms.embed_links or not chan_perms.view_channel or not chan_perms.manage_messages:
+            logger.debug("Found permissions issue, attempting to fix.")
             # Try to fix them (if we have admin, for instance)
             try:
                 chan_perms.view_channel = True
@@ -247,11 +250,14 @@ class SettingsCog(commands.Cog, name="settings command"):
                 chan_perms.embed_links = True
                 chan_perms.manage_messages = True
                 await verification_channel.set_permissions(inter.guild.me, overwrite=chan_perms)
+                logger.debug("...success!")
             # Forbidden - no access, must error out
             except discord.Forbidden:
+                logger.warning("Failed to set permissions in the verification channel")
                 embed = discord.Embed(title=self.bot.translate.msg(inter.guild_id, "global", "ERROR"), 
                                                                description=self.bot.translate.msg(inter.guild_id, "setup", "TEMPORARY_CHANNEL_SELECT_ERROR_DESCRIPTION"))
                 return await inter.response.send_message(embed=embed, ephemeral=True)
+        logger.info("...no issues found!")
         if log_channel is None:
              # Create log channel
             logger.info('Creating log channel and applying permissions')
@@ -261,7 +267,8 @@ class SettingsCog(commands.Cog, name="settings command"):
             }
             try:
                 logChannel = await inter.guild.create_text_channel('captcha-logs', overwrites=log_overwrites)
-            except discord.Forbidden:
+            except discord.Forbidden as e:
+                logger.warning(f"Failed to create log channel: {e.text}")
                 embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "global", "ERROR"), 
                                   description = self.bot.translate.msg(inter.guild_id, "setup", "TEMPORARY_CHANNEL_CREATE_ERROR_DESCRIPTION"), color=0xe00000) # Red
                 return await inter.response.send_message(embed=embed)
@@ -269,7 +276,9 @@ class SettingsCog(commands.Cog, name="settings command"):
             logger.info("...success!")
         # Verify we have permissions for the passed-in channel
         chan_perms = log_channel.overwrites_for(inter.guild.me)
+        logger.info("Checking permissions for log channel")
         if not chan_perms.send_messages or not chan_perms.embed_links or not chan_perms.view_channel:
+            logger.debug("Found permissions issue, attempting to fix")
             # Try to fix them (if we have admin, for instance)
             try:
                 chan_perms.view_channel = True
@@ -278,6 +287,7 @@ class SettingsCog(commands.Cog, name="settings command"):
                 await verification_channel.set_permissions(inter.guild.me, overwrite=chan_perms)
             # Forbidden - no access, must error out
             except discord.Forbidden:
+                logger.warning("Failed to set permissions in the verification channel")
                 embed = discord.Embed(title=self.bot.translate.msg(inter.guild_id, "global", "ERROR"), 
                                                                description=self.bot.translate.msg(inter.guild_id, "setup", "LOG_CHANNEL_SELECT_ERROR_DESCRIPTION"))
                 return await inter.response.send_message(embed=embed, ephemeral=True)
