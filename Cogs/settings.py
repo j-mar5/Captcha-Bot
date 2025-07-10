@@ -20,26 +20,26 @@ class SettingsCog(commands.Cog, name="settings command"):
         
 
 # ------------------------------------------------------ #  
-    #Set command tree:
-    #config (config_group)
-    #   ├── view (view)
-    #   ├── set (config_set_group)
-    #   │       ├── language (language)
-    #   │       ├── log_channel (log_channel)
-    #   │       └── min_account_age TODO
-    #   └── captcha (config_captcha_group)
-    #       ├── enabled (enabled)
-    #       ├── verification_channel TODO
-    #       ├── verified_role TODO
-    #       ├── maintain_permissions_on_new_channel TODO
-    #       ├── setup (setup)
-    #       └── temp_role TODO
-    config_group = app_commands.Group(name="config", description="View configuration", guild_only=True)
-    config_set_group = app_commands.Group(name="config_set", description="Modify configuration", guild_only=True)
+# Command tree:
+# ├── config_view (config_view)
+# ├── config_set (config_set_group)
+# │   ├── language (language)
+# │   ├── log_channel (log_channel)
+# │   └── min_account_age TODO
+# └── config_captcha (config_captcha_group)
+#     ├── enabled (enabled)
+#     ├── verification_channel TODO
+#     ├── verified_role TODO
+#     ├── maintain_permissions_on_new_channel TODO
+#     ├── setup (setup)
+#     ├── remove TODO
+#     └── temp_role TODO
+    
+    config_set_group = app_commands.Group(name="config_set", description="Modify other bot configuration", guild_only=True)
     config_captcha_group = app_commands.Group(name="config_captcha", description="Modify captcha configuration",)
 
     # /config view
-    @config_group.command(name = 'view',
+    @app_commands.command(name = 'config_view',
                         description="Display the current configuration.")
     @app_commands.default_permissions(manage_guild=True)
     @commands.cooldown(1, 3, commands.BucketType.member)
@@ -140,22 +140,9 @@ class SettingsCog(commands.Cog, name="settings command"):
                               description = self.bot.translate.msg(inter.guild_id, "logs", "LOG_CHANNEL_ENABLED_DESCRIPTION"), color = 0x2fa737) # Green
         return await inter.response.send_message(embed=embed)
         
-    # /config captcha enabled
-    @config_captcha_group.command(name="enabled", description="Enables or disables captcha. The protection must be fully setup (/config captcha setup) first.")
-    async def enabled(self, inter: discord.Interaction, enabled: bool):
-        if not enabled:
-            # Read configuration.json
-            data = getConfig(inter.guild_id)
-
-            # Add modifications
-            data["captcha"] = False
-            # Save
-            updateConfig(inter.guild_id, data)
-            # Respond
-            embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "global", "SUCCESS"), 
-                                  description = self.bot.translate.msg(inter.guild_id, "setup", "CAPTCHA_WAS_DELETED_WITH_SUCCESS_DESCRIPTION"), color = 0x2fa737) # Green
-            return await inter.response.send_message(embed=embed)
-        else:
+    # /config_captcha enable
+    @config_captcha_group.command(name="enable", description="Enables captcha protection. The protection must be fully setup (/config captcha setup) first.")
+    async def enable(self, inter: discord.Interaction, enabled: bool):
             # Check that all configuration parameters are set and valid (e.g. roles, channels) before setting captcha true
             # Read configuration.json
             data = getConfig(inter.guild_id)
@@ -190,6 +177,21 @@ class SettingsCog(commands.Cog, name="settings command"):
             embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "global", "SUCCESS"), 
                                   description = self.bot.translate.msg(inter.guild_id, "setup", "CAPTCHA_WAS_SET_UP_WITH_SUCCESS_DESCRIPTION"), color = 0x2fa737) # Green
             return await inter.response.send_message(embed=embed)
+    #/config_captcha disable
+    @config_captcha_group.command(name="disable", description="Temporarily disables captcha protection.")
+    async def disable(self, inter: discord.Interaction):
+            # Read configuration.json
+            data = getConfig(inter.guild_id)
+
+            # Add modifications
+            data["captcha"] = False
+            # Save
+            updateConfig(inter.guild_id, data)
+            # Respond
+            embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "global", "SUCCESS"), 
+                                  description = self.bot.translate.msg(inter.guild_id, "setup", "Captcha protection was deactivated successfully!"), color = 0x2fa737) # Green
+            return await inter.response.send_message(embed=embed)
+
 
 
 

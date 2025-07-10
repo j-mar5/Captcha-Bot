@@ -19,8 +19,8 @@ class HelpCog(commands.Cog):
 
         commandName2 = None
         stop = False
-
         if command_name is not None:
+ # TODO: update this to app_commands (CommandTree.get_commands?)
             for i in self.bot.commands:
                 if i.name == command_name.lower():
                     commandName2 = i
