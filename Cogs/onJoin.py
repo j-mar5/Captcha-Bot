@@ -56,8 +56,8 @@ class OnJoinCog(commands.Cog, name="on join"):
             getrole = get(member.guild.roles, id = data["temporaryRole"])
             await member.add_roles(getrole)
 
-            # 3 chances to guess correctly
-            remaining_attempts = 3
+            # 5 chances to verify correctly
+            remaining_attempts = 5
             while 1 > 0:
                 logger.debug("Start on_member_join loop")
                 # Generate a captcha

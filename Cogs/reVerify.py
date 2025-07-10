@@ -50,8 +50,8 @@ class ReVerifyCog(commands.Cog, name="re-verify"):
             await member.add_roles(getrole)
             await interaction.response.send_message(content=f"Prompted {member.display_name} ({member.global_name}) for a re-captcha!")
 
-            # 3 chances to guess correctly
-            remaining_attempts = 3
+            # 5 chances to verify correctly
+            remaining_attempts = 5
             while 1 > 0:
                 logger.debug("Start reverify loop")
                 # Generate a captcha
