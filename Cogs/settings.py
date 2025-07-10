@@ -20,28 +20,29 @@ class SettingsCog(commands.Cog, name="settings command"):
         
 
 # ------------------------------------------------------ #  
-    #Set command tree:
-    #config (config_group)
-    #   ├── view (view)
-    #   ├── set (config_set_group)
-    #   │       ├── language (language)
-    #   │       ├── log_channel (log_channel)
-    #   │       └── min_account_age TODO
-    #   └── captcha (config_captcha_group)
-    #       ├── enabled (enabled)
-    #       ├── verification_channel TODO
-    #       ├── verified_role TODO
-    #       ├── maintain_permissions_on_new_channel TODO
-    #       ├── setup (setup)
-    #       └── temp_role TODO
-    config_group = app_commands.Group(name="config", description="View configuration", guild_only=True)
-    config_set_group = app_commands.Group(name="config_set", description="Modify configuration", guild_only=True)
+# Command tree:
+# ├── config_view (config_view)
+# ├── config_set (config_set_group)
+# │   ├── language (language)
+# │   ├── log_channel (log_channel)
+# │   └── min_account_age TODO
+# └── config_captcha (config_captcha_group)
+#     ├── enabled (enabled)
+#     ├── verification_channel TODO
+#     ├── verified_role TODO
+#     ├── maintain_permissions_on_new_channel TODO
+#     ├── setup (setup)
+#     ├── remove TODO
+#     └── temp_role TODO
+    
+    config_set_group = app_commands.Group(name="config_set", description="Modify other bot configuration", guild_only=True)
     config_captcha_group = app_commands.Group(name="config_captcha", description="Modify captcha configuration",)
 
     # /config view
-    @config_group.command(name = 'view',
+    @app_commands.command(name = 'config_view',
                         description="Display the current configuration.")
     @app_commands.default_permissions(manage_guild=True)
+    @commands.has_permissions(manage_guild=True)
     @commands.cooldown(1, 3, commands.BucketType.member)
     @commands.guild_only()
     async def view (self, inter: discord.Interaction):
@@ -53,20 +54,9 @@ class SettingsCog(commands.Cog, name="settings command"):
         temporaryRole = data["temporaryRole"]
         roleGivenAfterCaptcha = data["roleGivenAfterCaptcha"]
         minAccountAge = data["minAccountDate"]
-        antispam = data["antiSpam"]
-        allowSpam = data["allowSpam"]
-        antiNudity = data["antiNudity"]
-        antiProfanity =  data["antiProfanity"]
         language =  data["language"]
             
         minAccountAge = int(minAccountAge/3600)
-
-        allowSpam2= ""
-        if len(allowSpam) == 0:
-            allowSpam2 = "None"
-        else:
-            for x in allowSpam:
-                allowSpam2 = f"{allowSpam2}<#{x}>, "
 
         if roleGivenAfterCaptcha is not False:
             roleGivenAfterCaptcha = f"<@&{roleGivenAfterCaptcha}>"
@@ -86,6 +76,7 @@ class SettingsCog(commands.Cog, name="settings command"):
     @config_set_group.command(name="language", description="Set the bot's language")
     @app_commands.guild_only()
     @app_commands.default_permissions(manage_guild=True)
+    @commands.has_permissions(manage_guild=True)
     async def language(self, inter: discord.Interaction, language: Languages):
         # this is only used internally because I don't want to write a nasty one-liner to iterate the values of the enum above to fit in the structure of this translation method.
         # if adding support, ensure this is in sync with the enum above.
@@ -106,6 +97,7 @@ class SettingsCog(commands.Cog, name="settings command"):
     @config_set_group.command(name="log_channel", description="Set the channel to log bot events to (or disable this function if no channel is specified)")
     @app_commands.guild_only()
     @app_commands.default_permissions(manage_guild=True)
+    @commands.has_permissions(manage_guild=True)
     async def log_channel(self, inter: discord.Interaction, channel: Optional[discord.TextChannel] = None):
         # Disable log if no channel specified
         if channel is None:
@@ -151,22 +143,9 @@ class SettingsCog(commands.Cog, name="settings command"):
                               description = self.bot.translate.msg(inter.guild_id, "logs", "LOG_CHANNEL_ENABLED_DESCRIPTION"), color = 0x2fa737) # Green
         return await inter.response.send_message(embed=embed)
         
-    # /config captcha enabled
-    @config_captcha_group.command(name="enabled", description="Enables or disables captcha. The protection must be fully setup (/config captcha setup) first.")
-    async def enabled(self, inter: discord.Interaction, enabled: bool):
-        if not enabled:
-            # Read configuration.json
-            data = getConfig(inter.guild_id)
-
-            # Add modifications
-            data["captcha"] = False
-            # Save
-            updateConfig(inter.guild_id, data)
-            # Respond
-            embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "global", "SUCCESS"), 
-                                  description = self.bot.translate.msg(inter.guild_id, "setup", "CAPTCHA_WAS_DELETED_WITH_SUCCESS_DESCRIPTION"), color = 0x2fa737) # Green
-            return await inter.response.send_message(embed=embed)
-        else:
+    # /config_captcha enable
+    @config_captcha_group.command(name="enable", description="Enables captcha protection. The protection must be fully setup (/config captcha setup) first.")
+    async def enable(self, inter: discord.Interaction):
             # Check that all configuration parameters are set and valid (e.g. roles, channels) before setting captcha true
             # Read configuration.json
             data = getConfig(inter.guild_id)
@@ -201,12 +180,28 @@ class SettingsCog(commands.Cog, name="settings command"):
             embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "global", "SUCCESS"), 
                                   description = self.bot.translate.msg(inter.guild_id, "setup", "CAPTCHA_WAS_SET_UP_WITH_SUCCESS_DESCRIPTION"), color = 0x2fa737) # Green
             return await inter.response.send_message(embed=embed)
+    #/config_captcha disable
+    @config_captcha_group.command(name="disable", description="Temporarily disables captcha protection.")
+    async def disable(self, inter: discord.Interaction):
+            # Read configuration.json
+            data = getConfig(inter.guild_id)
+
+            # Add modifications
+            data["captcha"] = False
+            # Save
+            updateConfig(inter.guild_id, data)
+            # Respond
+            embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "global", "SUCCESS"), 
+                                  description = "Captcha protection was deactivated successfully!", color = 0x2fa737) # Green
+            return await inter.response.send_message(embed=embed)
+
 
 
 
 
     @config_captcha_group.command(name="setup", description="Configures the captcha protection. Bot attempts to create empty parameters.")
     @app_commands.default_permissions(administrator=True)
+    @commands.has_permissions(administrator=True)
     @app_commands.describe(verification_channel = "The channel used to send and receive CAPTCHA challenges. (Default: bot creates #verification)")
     @app_commands.describe(temporary_role = "The temporary role given to users upon join. (Default: bot creates \"untested\")")
     @app_commands.describe(role_after_captcha = "The role to give to users upon successful verification (optional)")
@@ -219,7 +214,7 @@ class SettingsCog(commands.Cog, name="settings command"):
         if data["captcha"] is True:
             embed = discord.Embed(title=self.bot.translate.msg(inter.guild_id, "global", "ERROR"), 
                                   description="Captcha protection is already set up! Disable the captcha first (/config captcha enabled).", color=0xe00000) # Red
-            await inter.response.send_message(embed=embed)
+            return await inter.response.send_message(embed=embed)
         if temporary_role is None:
             logger.info('Creating the temporary role to be applied to new users')
             try:
@@ -239,16 +234,19 @@ class SettingsCog(commands.Cog, name="settings command"):
                 inter.guild.me: discord.PermissionOverwrite(read_messages=True, send_messages = True, embed_links = True, manage_messages = True) 
             }
             try:
-                captchaChannel = await inter.guild.create_text_channel('verification', slowmode_delay=5, overwrites=overwrites)
-            except discord.Forbidden:
+                captchaChannel = await inter.guild.create_text_channel('verification', overwrites=overwrites)
+            except discord.Forbidden as e:
+                logger.warning(f"Failed to create verification channel: {e.text}")
                 embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "global", "ERROR"), 
                                   description = self.bot.translate.msg(inter.guild_id, "setup", "TEMPORARY_CHANNEL_CREATE_ERROR_DESCRIPTION"), color=0xe00000) # Red
                 return await inter.response.send_message(embed=embed)
             verification_channel = captchaChannel
             logger.info("...success!")
         # Verify we have permissions for the passed-in channel
+        logger.info("Checking permissions for verification channel")
         chan_perms = verification_channel.overwrites_for(inter.guild.me)
         if not chan_perms.send_messages or not chan_perms.embed_links or not chan_perms.view_channel or not chan_perms.manage_messages:
+            logger.debug("Found permissions issue, attempting to fix.")
             # Try to fix them (if we have admin, for instance)
             try:
                 chan_perms.view_channel = True
@@ -256,11 +254,14 @@ class SettingsCog(commands.Cog, name="settings command"):
                 chan_perms.embed_links = True
                 chan_perms.manage_messages = True
                 await verification_channel.set_permissions(inter.guild.me, overwrite=chan_perms)
+                logger.debug("...success!")
             # Forbidden - no access, must error out
             except discord.Forbidden:
+                logger.warning("Failed to set permissions in the verification channel")
                 embed = discord.Embed(title=self.bot.translate.msg(inter.guild_id, "global", "ERROR"), 
                                                                description=self.bot.translate.msg(inter.guild_id, "setup", "TEMPORARY_CHANNEL_SELECT_ERROR_DESCRIPTION"))
                 return await inter.response.send_message(embed=embed, ephemeral=True)
+        logger.info("...no issues found!")
         if log_channel is None:
              # Create log channel
             logger.info('Creating log channel and applying permissions')
@@ -270,7 +271,8 @@ class SettingsCog(commands.Cog, name="settings command"):
             }
             try:
                 logChannel = await inter.guild.create_text_channel('captcha-logs', overwrites=log_overwrites)
-            except discord.Forbidden:
+            except discord.Forbidden as e:
+                logger.warning(f"Failed to create log channel: {e.text}")
                 embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "global", "ERROR"), 
                                   description = self.bot.translate.msg(inter.guild_id, "setup", "TEMPORARY_CHANNEL_CREATE_ERROR_DESCRIPTION"), color=0xe00000) # Red
                 return await inter.response.send_message(embed=embed)
@@ -278,7 +280,9 @@ class SettingsCog(commands.Cog, name="settings command"):
             logger.info("...success!")
         # Verify we have permissions for the passed-in channel
         chan_perms = log_channel.overwrites_for(inter.guild.me)
+        logger.info("Checking permissions for log channel")
         if not chan_perms.send_messages or not chan_perms.embed_links or not chan_perms.view_channel:
+            logger.debug("Found permissions issue, attempting to fix")
             # Try to fix them (if we have admin, for instance)
             try:
                 chan_perms.view_channel = True
@@ -287,6 +291,7 @@ class SettingsCog(commands.Cog, name="settings command"):
                 await verification_channel.set_permissions(inter.guild.me, overwrite=chan_perms)
             # Forbidden - no access, must error out
             except discord.Forbidden:
+                logger.warning("Failed to set permissions in the verification channel")
                 embed = discord.Embed(title=self.bot.translate.msg(inter.guild_id, "global", "ERROR"), 
                                                                description=self.bot.translate.msg(inter.guild_id, "setup", "LOG_CHANNEL_SELECT_ERROR_DESCRIPTION"))
                 return await inter.response.send_message(embed=embed, ephemeral=True)

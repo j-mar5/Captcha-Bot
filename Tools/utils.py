@@ -7,16 +7,12 @@ def getConfig(guildID):
         defaultConfig = {
             "prefix": "?",
             "language": "en-US",
-            "antiProfanity": True,
-            "antiNudity": True,
-            "antiSpam": True,
-            "allowSpam": [],
             "captcha": False,
             "captchaChannel": False,
-            "logChannel": 1,
-            "temporaryRole": 1,
+            "logChannel": False,
+            "temporaryRole": False,
             "roleGivenAfterCaptcha": False,
-            "minAccountDate": 86400
+            "minAccountDate": False
         }
         updateConfig(guildID, defaultConfig)
         return defaultConfig
