@@ -230,7 +230,7 @@ class SettingsCog(commands.Cog, name="settings command"):
                 inter.guild.me: discord.PermissionOverwrite(read_messages=True, send_messages = True, embed_links = True, manage_messages = True) 
             }
             try:
-                captchaChannel = await inter.guild.create_text_channel('verification', overwrites=overwrites)
+                captchaChannel = await inter.guild.create_text_channel('verification')#, overwrites=overwrites)
             except discord.Forbidden as e:
                 logger.warning(f"Failed to create verification channel: {e.text}")
                 embed = discord.Embed(title = self.bot.translate.msg(inter.guild_id, "global", "ERROR"), 
