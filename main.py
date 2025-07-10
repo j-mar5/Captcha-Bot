@@ -15,7 +15,7 @@ intents.message_content = True
 bot = commands.Bot(getGuildPrefix, intents = intents)
 
 # HELP
-bot.remove_command("help") # To create a personal help command 
+# bot.remove_command("help") # To create a personal help command 
 
 # Translate
 bot.translate = Translate()
@@ -35,7 +35,7 @@ async def on_ready():
     await bot.tree.sync()
     logger.info("Synced commands")
     logger.success(f'Logged in as {bot.user}')
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name =f"?help"))
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name =f"for /help"))
 
 # ------------------------ RUN ------------------------ # 
 with open("config.json", "r") as config:

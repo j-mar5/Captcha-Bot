@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-from Tools.utils import getGuildPrefix
+from discord import app_commands
+from typing import Optional
 
 # ------------------------ COGS ------------------------ #  
 
@@ -10,23 +11,23 @@ class HelpCog(commands.Cog):
 
 # ------------------------------------------------------ #  
 
-    @commands.command(name = 'help',
-                        usage="(commandName)",
-                        description = "Display the help message.")
-    @commands.cooldown(1, 3, commands.BucketType.member)
-    async def help(self, ctx, commandName=None):
+    @app_commands.command(name="help", 
+                          description="Show the help page.")
+    @app_commands.guild_only()
+    @app_commands.default_permissions(send_messages = True)
+    async def help(self, inter: discord.Interaction, command_name: Optional[str] = None):
 
         commandName2 = None
         stop = False
-
-        if commandName is not None:
+        if command_name is not None:
+ # TODO: update this to app_commands (CommandTree.get_commands?)
             for i in self.bot.commands:
-                if i.name == commandName.lower():
+                if i.name == command_name.lower():
                     commandName2 = i
                     break 
                 else:
                     for j in i.aliases:
-                        if j == commandName.lower():
+                        if j == command_name.lower():
                             commandName2 = i
                             stop = True
                             break
@@ -34,7 +35,7 @@ class HelpCog(commands.Cog):
                     break 
 
             if commandName2 is None:
-                await ctx.channel.send("No command found!")   
+                await inter.response.send_message("No command found!", ephemeral=True)   
             else:
                 embed = discord.Embed(title=f"**{commandName2.name.upper()} COMMAND :**", description="", color=0xdeaa0c)
                 embed.set_thumbnail(url=f'{str(self.bot.user.display_avatar)}')
@@ -50,22 +51,21 @@ class HelpCog(commands.Cog):
                 if commandName2.usage is None:
                     commandName2.usage = ""
                     
-                prefix = await getGuildPrefix(self.bot, ctx)
-                embed.add_field(name=f"**USAGE :**", value=f"{prefix}{commandName2.name} {commandName2.usage}", inline=False)
+                
+                embed.add_field(name=f"**USAGE :**", value=f"/{commandName2.name} {commandName2.usage}", inline=False)
                 embed.add_field(name=f"**DESCRIPTION :**", value=f"{commandName2.description}", inline=False)
                 embed.set_footer(text="Captcha Bot")
-                await ctx.channel.send(embed=embed)
+                await inter.response.send_message(embed=embed)
         else:
-            prefix = await getGuildPrefix(self.bot, ctx)
-            embed = discord.Embed(title=f"__**Help page of {self.bot.user.name.upper()}**__", description="**{prefix}help (command) :**Display the help list or the help data for a specific command.", color=0xdeaa0c)
+
+            embed = discord.Embed(title=f"__**Help page of {self.bot.user.name.upper()}**__", description="**/help (command) :**Display the help list or the help data for a specific command.", color=0xdeaa0c)
             embed.set_thumbnail(url=f'{str(self.bot.user.display_avatar)}')
-            embed.add_field(name=f"__ADMIN :__", value=f"**{prefix}setup <on/off> :** Set up the captcha protection.\n**{prefix}settings :** Display the list of settings.\n**{prefix}giveroleaftercaptcha <role ID/off> :** Give a role after that the user passed the captcha.\n**{prefix}minaccountage <number (hours)> :** set a minimum age to join the server (24 hours by default).\n**{prefix}antinudity <true/false> :** Enable or disable the nudity image protection.\n**{prefix}antiprofanity <true/false> :** Enable or disable the profanity protection.\n**{prefix}antispam <true/false> :** Enable or disable the spam protection.\n**{prefix}allowspam <#channel> (remove) :** Enable or disable the spam protection in a specific channel.\n**{prefix}lock | unlock <#channel/ID> :** Lock/Unlock a channel.\n\n**{prefix}kick <@user/ID> :** Kick the user.\n**{prefix}ban <@user/ID> :** ban the user.\n\n**{prefix}changeprefix <prefix> :** Change the bot's prefix.\n**{prefix}changelanguage <language> :** Change the bot's language.", inline=False)
-            embed.add_field(name=f"__COMMANDS :__", value=f"**{prefix}userinfos <@user/ID> :** Get user infomations.", inline=False)
+            embed.add_field(name=f"__ADMIN :__", value=f"**/config_captcha setup [#verification-channel] [@verification_role] [#log_channel] [@role_after_captcha]:** Set up the captcha protection.\n**/config view :** Display the list of settings.\n**/config_set language <language> :** Change the bot's language.\n**/config_set log_channel <#channel>:** Set the bot's log channel.\n**/config_set captcha enabled <true/false>:** Enable or disable configured captcha protection\n**/reverify <@user>:** Make a user re-verify against the captcha.", inline=False) #**{prefix}giveroleaftercaptcha <role ID/off> :** Give a role after that the user passed the captcha.\n**{prefix}minaccountage <number (hours)> :** set a minimum age to join the server (24 hours by default).\n**{prefix}antinudity <true/false> :** Enable or disable the nudity image protection.\n**{prefix}antiprofanity <true/false> :** Enable or disable the profanity protection.\n**{prefix}antispam <true/false> :** Enable or disable the spam protection.\n**{prefix}allowspam <#channel> (remove) :** Enable or disable the spam protection in a specific channel.\n**{prefix}lock | unlock <#channel/ID> :** Lock/Unlock a channel.\n\n**{prefix}kick <@user/ID> :** Kick the user.\n**{prefix}ban <@user/ID> :** ban the user.\n\n**{prefix}changeprefix <prefix> :** Change the bot's prefix.\n", inline=False)
             embed.set_footer(text="Captcha Bot")
-            await ctx.channel.send(embed=embed)
+            await inter.response.send_message(embed=embed)
 
 # ------------------------ BOT ------------------------ #  
 
 async def setup(bot):
-    bot.remove_command("help")
+    # bot.remove_command("help")
     await bot.add_cog(HelpCog(bot))

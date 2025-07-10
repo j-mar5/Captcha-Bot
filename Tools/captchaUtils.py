@@ -5,7 +5,17 @@ import Augmentor
 import os
 import shutil
 from PIL import ImageFont, ImageDraw, Image
+from Tools.logMessage import sendLogMessage
 from loguru import logger
+import asyncio
+import time
+from enum import IntEnum
+
+class ReturnStatus(IntEnum):
+    SUCCESS = 0
+    FAIL = 1
+    TIMEOUT = 2
+
 
 async def generateCaptcha(member: discord.Member, text: str):
     image = np.zeros(shape= (100, 350, 3), dtype= np.uint8)
@@ -92,3 +102,35 @@ async def cleanup(member: discord.Member):
         shutil.rmtree(folderPath)
     except Exception as error:
         logger.error(f"Delete captcha file failed {error}")
+
+async def verify(self, member, text: str, timeout: int):
+    def check(message):
+        if message.author == member and  message.content != "":
+            return message.content
+        
+    try:
+        logger.info(f"Starting timer for {member}")
+        msg = await self.bot.wait_for('message', timeout=timeout, check=check)
+        logger.info(f"Message received from {member}, checking captcha")
+        # Check the captcha
+        password = text.split(" ")
+        password = "".join(password)
+        if msg.content == password:
+            logger.info("...password correct!")
+            try:
+                await msg.delete()
+            except (discord.errors.NotFound, discord.Forbidden):
+                logger.info("Delete message in verification channel failed, check permissions")
+                pass
+            return ReturnStatus.SUCCESS
+        else:
+            logger.info(f"...password incorrect! Got {msg.content}, expected {password}")
+            try:
+                await msg.delete()
+            except (discord.errors.NotFound, discord.Forbidden):
+                logger.info("Delete message in verification channel failed, check permissions")
+                pass
+            return ReturnStatus.FAIL
+    except (asyncio.TimeoutError):
+        logger.debug("...timed out!")
+        return ReturnStatus.TIMEOUT

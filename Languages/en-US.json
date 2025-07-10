@@ -24,7 +24,7 @@
         "MEMBER_PASSED_THE_CAPTCHA": "{0} passed the captcha.",
         "USER_INFORMATIONS": "**__User information:__**\n\n**Name:** {0}\n**Id:** {1}",
         "DATE": "User joined the server at {0} UTC" ,
-        "MEMBER_FAILED_THE_CAPTCHA": "{0} failed the captcha.",
+        "MEMBER_FAILED_THE_CAPTCHA": "{0} failed the captcha. You have {1} attempts remaining.",
         "MEMBER_FAILED_THE_CAPTCHA_REASON": "Reason : You failed the captcha. You may re-join the server with the same invite link to try again.",
         "MEMBER_FAILED_THE_CAPTCHA_REASON_LOG": "**Reason :** They failed the captcha.\n\n**__User information:__**\n\n**Name:** {0}\n**Id:** {1}",
         "TIME_IS_OUT": "**CAPTCHA TIMEOUT**",

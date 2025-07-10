@@ -10,7 +10,7 @@ import time
 from discord.ext import commands
 from discord.utils import get
 from PIL import ImageFont, ImageDraw, Image
-from Tools.captchaImage import generateCaptcha, cleanup
+import Tools.captchaUtils as captchaUtils
 from Tools.utils import getConfig
 from Tools.logMessage import sendLogMessage
 from loguru import logger
@@ -55,37 +55,32 @@ class OnJoinCog(commands.Cog, name="on join"):
             logger.info("Giving new member the unverified role")
             getrole = get(member.guild.roles, id = data["temporaryRole"])
             await member.add_roles(getrole)
-            
-            numbers = '23456789' # restricted choices to avoid ambiguous characters
-            letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ' # restricted choices to avoid ambiguous characters
-            text = ' '.join(random.choice(numbers + letters) for _ in range(6)) # + string.ascii_lowercase + string.digits
-            captchaFile = await generateCaptcha(member, text)
-            captchaEmbed = await captchaChannel.send(self.bot.translate.msg(member.guild.id, "onJoin", "CAPTCHA_MESSAGE").format(member.mention), file= captchaFile)
-            # Remove captcha folder
-            logger.debug("...success! Removing image files on disk")
-            try:
-                await cleanup(member)
-            except Exception as error:
-                logger.error(f"Delete captcha file failed {error}")
 
-            # Check if it is the right user
-            # TODO: need to delete messages if not
-            def check(message):
-                if message.author == member and  message.content != "":
-                    return message.content
+            # 5 chances to verify correctly
+            remaining_attempts = 5
+            while 1 > 0:
+                logger.debug("Start on_member_join loop")
+                # Generate a captcha
 
-            try:
-                logger.info(f"Starting timer for {member}")
-                msg = await self.bot.wait_for('message', timeout=300.0, check=check)
-                logger.info(f"Message received from {member}, checking captcha")
-                # Check the captcha
-                password = text.split(" ")
-                password = "".join(password)
-                if msg.content == password:
-                    logger.debug("...password correct!")
+                numbers = '23456789' # restricted choices to avoid ambiguous characters
+                letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ' # restricted choices to avoid ambiguous characters
+                text = ' '.join(random.choice(numbers + letters) for _ in range(6)) # + string.ascii_lowercase + string.digits
+                captchaFile = await captchaUtils.generateCaptcha(member, text)
+                captchaEmbed = await captchaChannel.send(self.bot.translate.msg(member.guild.id, "onJoin", "CAPTCHA_MESSAGE").format(member.mention), file= captchaFile)
+                # Remove captcha folder
+                logger.debug("...success! Removing image files on disk")
+                try:
+                    await captchaUtils.cleanup(member)
+                except Exception as error:
+                    logger.error(f"Delete captcha file failed {error}")
+
+                # Wait 5 minutes for a response from the user, verify() returns an enum of SUCCESS, FAIL, or TIMEOUT
+                logger.debug(f"Calling verify in on_member_join for {member}, timeout 5 minutes.")
+                result = await captchaUtils.verify(self=self, member=member, text=text, timeout=300)
+                if result == captchaUtils.ReturnStatus.SUCCESS:
                     embed = discord.Embed(description=self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_PASSED_THE_CAPTCHA").format(member.mention), color=0x2fa737) # Green
                     await captchaChannel.send(embed = embed, delete_after = 5)
-                    # Give and remove roles
+                    # Give and remove roles as configured
                     try:
                         getrole = get(member.guild.roles, id = data["roleGivenAfterCaptcha"])
                         if getrole is not False:
@@ -97,64 +92,78 @@ class OnJoinCog(commands.Cog, name="on join"):
                         await member.remove_roles(getrole)
                     except Exception as error:
                         logger.warning(f"No temp role found to remove from {member}: {error}")
+                    # Delete captcha post
                     time.sleep(3)
                     try:
                         await captchaEmbed.delete()
                     except discord.errors.NotFound:
                         pass
-                    try:
-                        await msg.delete()
-                    except discord.errors.NotFound:
-                        pass
+                
                     # Logs
                     embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_PASSED_THE_CAPTCHA").format(member), description = self.bot.translate.msg(member.guild.id, "onJoin", "USER_INFORMATIONS").format(member, member.id), color = 0x2fa737)
                     embed.set_footer(text= self.bot.translate.msg(member.guild.id, "onJoin", "DATE").format(memberTime))
                     await sendLogMessage(self, event=member, channel=logChannel, embed=embed)
+                    # do not continue the loop
+                    logger.info("Stopping on_member_join loop on successful captcha")
+                    return
 
-                else:
-                    embed = discord.Embed(description=self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_FAILED_THE_CAPTCHA").format(member.mention), color=0xca1616) # Red
+                elif result == captchaUtils.ReturnStatus.FAIL:
+                    logger.debug(f"Received failure in checking {member}. remaining_attempts is at {remaining_attempts}")
+                    # kick if all attempts have been used
+                    if remaining_attempts == 1:
+                        embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "YOU_HAVE_BEEN_KICKED").format(member.guild.name), description = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_FAILED_THE_CAPTCHA_REASON"), color = 0xff0000)
+
+                        try:
+                            await member.send(embed=embed)
+                        except discord.errors.Forbidden:
+                            # can't send dm to user
+                            pass
+                        await member.kick()
+                        embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_HAS_BEEN_KICKED").format(member), description = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_FAILED_THE_CAPTCHA_REASON_LOG").format(member, member.id), color = 0xff0000)
+                        embed.set_footer(text= self.bot.translate.msg(member.guild.id, "onJoin", "DATE").format(memberTime))
+                        await sendLogMessage(self, event=member, channel=logChannel, embed=embed)
+                        #delete captcha post
+                        time.sleep(3)
+                        try:
+                            await captchaEmbed.delete()
+                        except (discord.errors.NotFound, discord.Forbidden):
+                            logger.error("Delete message in verification channel failed, check permissions")
+                            pass
+                        logger.info("Stopping on_member_join loop on a kick for excessive failures")
+                        # do not continue the loop
+                        return
+                    else:
+                        # notify of failure, decrement attempts remaining and continue the loop
+                        remaining_attempts -= 1
+                        logger.debug(f"Decremented remaining_attempts, now {remaining_attempts}")
+                        embed = discord.Embed(description=self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_FAILED_THE_CAPTCHA").format(member.mention, remaining_attempts), color=0xca1616) # Red
+                        await captchaChannel.send(embed = embed, delete_after = 5)
+                        time.sleep(3)
+                        try:
+                            await captchaEmbed.delete()
+                        except (discord.errors.NotFound, discord.Forbidden):
+                            logger.error("Delete message in verification channel failed, check permissions")
+                            pass
+                elif result == captchaUtils.ReturnStatus.TIMEOUT:
+                    # immediately kick, likely a bot user
+                    embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "TIME_IS_OUT"), description = self.bot.translate.msg(member.guild.id, "onJoin", "USER_HAS_EXCEEDED_THE_RESPONSE_TIME").format(member.mention), color = 0xff0000)
                     await captchaChannel.send(embed = embed, delete_after = 5)
-                    embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "YOU_HAVE_BEEN_KICKED").format(member.guild.name), description = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_FAILED_THE_CAPTCHA_REASON"), color = 0xff0000)
-
                     try:
-                        await member.send(embed=embed)
-                    except discord.errors.Forbidden:
-                        # can't send dm to user
-                        pass
-                    await member.kick()
-                    embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_HAS_BEEN_KICKED").format(member), description = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_FAILED_THE_CAPTCHA_REASON_LOG").format(member, member.id), color = 0xff0000)
+                        embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "YOU_HAVE_BEEN_KICKED").format(member.guild.name), description = self.bot.translate.msg(member.guild.id, "onJoin", "USER_HAS_EXCEEDED_THE_RESPONSE_TIME_REASON"), color = 0xff0000)
+                        await member.send(embed = embed)
+                        await member.kick() # Kick the user
+                    except Exception as error:
+                        print(f"Log failed (onJoin) : {error}")
+                    time.sleep(3)
+                    await captchaEmbed.delete()
+                    # Logs
+                    embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_HAS_BEEN_KICKED").format(member), description = self.bot.translate.msg(member.guild.id, "onJoin", "USER_HAS_EXCEEDED_THE_RESPONSE_TIME_LOG").format(member, member.id), color = 0xff0000)
                     embed.set_footer(text= self.bot.translate.msg(member.guild.id, "onJoin", "DATE").format(memberTime))
                     await sendLogMessage(self, event=member, channel=logChannel, embed=embed)
-
-                    time.sleep(3)
-                    try:
-                        await captchaEmbed.delete()
-                    except (discord.errors.NotFound, discord.Forbidden):
-                        logger.info("Delete message in verification channel failed, check permissions")
-                        pass
-                    try:
-                        await msg.delete()
-                    except (discord.errors.NotFound, discord.Forbidden):
-                        logger.info("Delete message in verification channel failed, check permissions")
-                        pass
-                    # Logs
-                    
-
-            except (asyncio.TimeoutError):
-                embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "TIME_IS_OUT"), description = self.bot.translate.msg(member.guild.id, "onJoin", "USER_HAS_EXCEEDED_THE_RESPONSE_TIME").format(member.mention), color = 0xff0000)
-                await captchaChannel.send(embed = embed, delete_after = 5)
-                try:
-                    embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "YOU_HAVE_BEEN_KICKED").format(member.guild.name), description = self.bot.translate.msg(member.guild.id, "onJoin", "USER_HAS_EXCEEDED_THE_RESPONSE_TIME_REASON"), color = 0xff0000)
-                    await member.send(embed = embed)
-                    await member.kick() # Kick the user
-                except Exception as error:
-                    print(f"Log failed (onJoin) : {error}")
-                time.sleep(3)
-                await captchaEmbed.delete()
-                # Logs
-                embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_HAS_BEEN_KICKED").format(member), description = self.bot.translate.msg(member.guild.id, "onJoin", "USER_HAS_EXCEEDED_THE_RESPONSE_TIME_LOG").format(member, member.id), color = 0xff0000)
-                embed.set_footer(text= self.bot.translate.msg(member.guild.id, "onJoin", "DATE").format(memberTime))
-                await sendLogMessage(self, event=member, channel=logChannel, embed=embed)
+                    # do not continue the loop
+                    logger.info("Stopping on_member_join loop on a kick for verification timeout")
+                    return
+                
 
 # ------------------------ BOT ------------------------ #  
 
