@@ -8,65 +8,60 @@ import shutil
 import asyncio
 import time
 from discord.ext import commands
+from discord import app_commands
 from discord.utils import get
 from PIL import ImageFont, ImageDraw, Image
-import Tools.captchaUtils as captchaUtils
 from Tools.utils import getConfig
+import Tools.captchaUtils as captchaUtils
 from Tools.logMessage import sendLogMessage
 from loguru import logger
 
 # ------------------------ COGS ------------------------ #  
 
-class OnJoinCog(commands.Cog, name="on join"):
+class ReVerifyCog(commands.Cog, name="re-verify"):
     def __init__(self, bot):
         self.bot = bot
 
 # ------------------------------------------------------ #  
-
-    @commands.Cog.listener()
-    async def on_member_join(self, member):
-
+    @app_commands.command(name="reverify", 
+                          description="Marks a member for re-verification against the captcha.")
+    @app_commands.guild_only()
+    @app_commands.default_permissions(kick_members=True)
+    @commands.has_permissions(kick_members=True)
+    async def reverify(self, interaction: discord.Interaction, member: discord.Member):
+        
         if (member.bot):
-            return
+           return await interaction.response.send_message(content="Can't verify a bot!", ephemeral=True)
+            
 
         # Read configuration.json
         data = getConfig(member.guild.id)
+        if data["captcha"] is False:
+            return await interaction.response.send_message(content="Captcha protection is disabled. Please enable it before reverifying a member.", ephemeral=True)
         logChannel = data["logChannel"]
         captchaChannel = self.bot.get_channel(data["captchaChannel"])
 
-        memberTime = f"{member.joined_at.year}-{member.joined_at.month}-{member.joined_at.day} {member.joined_at.hour}:{member.joined_at.minute}:{member.joined_at.second}"
-
-        # Check the user account creation date (1 day by default)
-        if data["minAccountDate"] is False:
-            userAccountDate = member.created_at.timestamp()
-            if userAccountDate < data["minAccountDate"]:
-                minAccountDate = data["minAccountDate"] / 3600
-                embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "YOU_HAVE_BEEN_KICKED").format(member.guild.name), description = self.bot.translate.msg(member.guild.id, "onJoin", "MIN_ACCOUNT_AGE_KICK_REASON").format(minAccountDate), color = 0xff0000)
-                await member.send(embed = embed)
-                await member.kick() # Kick the user
-                # Logs
-                embed = discord.Embed(title = self.bot.translate.msg(member.guild.id, "onJoin", "HAS_BEEN_KICKED").format(member), description = self.bot.translate.msg(member.guild.id, "onJoin", "MIN_ACCOUNT_AGE_HAS_BEEN_KICKED_REASON").format(minAccountDate, member.created_at, member, member.id), color = 0xff0000)
-                embed.set_footer(text= f"at {member.joined_at}")
-                await sendLogMessage(self, event=member, channel=logChannel, embed=embed)
+        memberTime = f"{member.joined_at.year}-{member.joined_at.month:02d}-{member.joined_at.day:02d} {member.joined_at.hour:02d}:{member.joined_at.minute:02d}:{member.joined_at.second:02d}"
 
         if data["captcha"] is True:
-            logger.info(f"User {member} joined, starting captcha")
+            logger.info(f"User {member} marked for re-verification")
             # Give temporary role
             logger.info("Giving new member the unverified role")
             getrole = get(member.guild.roles, id = data["temporaryRole"])
             await member.add_roles(getrole)
+            await interaction.response.send_message(content=f"Prompted {member.display_name} ({member.global_name}) for a re-captcha!")
 
             # 5 chances to verify correctly
             remaining_attempts = 5
             while 1 > 0:
-                logger.debug("Start on_member_join loop")
+                logger.debug("Start reverify loop")
                 # Generate a captcha
 
                 numbers = '23456789' # restricted choices to avoid ambiguous characters
                 letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ' # restricted choices to avoid ambiguous characters
                 text = ' '.join(random.choice(numbers + letters) for _ in range(6)) # + string.ascii_lowercase + string.digits
                 captchaFile = await captchaUtils.generateCaptcha(member, text)
-                captchaEmbed = await captchaChannel.send(self.bot.translate.msg(member.guild.id, "onJoin", "CAPTCHA_MESSAGE").format(member.mention), file= captchaFile)
+                captchaEmbed = await captchaChannel.send(self.bot.translate.msg(member.guild.id, "reVerify", "REVERIFICATION_MESSAGE").format(member.mention), file= captchaFile)
                 # Remove captcha folder
                 logger.debug("...success! Removing image files on disk")
                 try:
@@ -74,9 +69,9 @@ class OnJoinCog(commands.Cog, name="on join"):
                 except Exception as error:
                     logger.error(f"Delete captcha file failed {error}")
 
-                # Wait 5 minutes for a response from the user, verify() returns an enum of SUCCESS, FAIL, or TIMEOUT
-                logger.debug(f"Calling verify in on_member_join for {member}, timeout 5 minutes.")
-                result = await captchaUtils.verify(self=self, member=member, text=text, timeout=300)
+                # Wait 24 hours for a response from the user, verify() returns an enum of SUCCESS, FAIL, or TIMEOUT
+                logger.debug(f"Calling verify in reverify for {member}, timeout 24 hours.")
+                result = await captchaUtils.verify(self=self, member=member, text=text, timeout=86400)
                 if result == captchaUtils.ReturnStatus.SUCCESS:
                     embed = discord.Embed(description=self.bot.translate.msg(member.guild.id, "onJoin", "MEMBER_PASSED_THE_CAPTCHA").format(member.mention), color=0x2fa737) # Green
                     await captchaChannel.send(embed = embed, delete_after = 5)
@@ -104,7 +99,7 @@ class OnJoinCog(commands.Cog, name="on join"):
                     embed.set_footer(text= self.bot.translate.msg(member.guild.id, "onJoin", "DATE").format(memberTime))
                     await sendLogMessage(self, event=member, channel=logChannel, embed=embed)
                     # do not continue the loop
-                    logger.info("Stopping on_member_join loop on successful captcha")
+                    logger.info("Stopping reverify loop on successful captcha")
                     return
 
                 elif result == captchaUtils.ReturnStatus.FAIL:
@@ -129,7 +124,7 @@ class OnJoinCog(commands.Cog, name="on join"):
                         except (discord.errors.NotFound, discord.Forbidden):
                             logger.error("Delete message in verification channel failed, check permissions")
                             pass
-                        logger.info("Stopping on_member_join loop on a kick for excessive failures")
+                        logger.info("Stopping reverify loop on a kick for excessive failures")
                         # do not continue the loop
                         return
                     else:
@@ -161,11 +156,10 @@ class OnJoinCog(commands.Cog, name="on join"):
                     embed.set_footer(text= self.bot.translate.msg(member.guild.id, "onJoin", "DATE").format(memberTime))
                     await sendLogMessage(self, event=member, channel=logChannel, embed=embed)
                     # do not continue the loop
-                    logger.info("Stopping on_member_join loop on a kick for verification timeout")
+                    logger.info("Stopping reverify loop on a kick for verification timeout")
                     return
-                
 
 # ------------------------ BOT ------------------------ #  
 
 async def setup(bot):
-    await bot.add_cog(OnJoinCog(bot))
+    await bot.add_cog(ReVerifyCog(bot))

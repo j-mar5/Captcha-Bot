@@ -11,7 +11,7 @@ class MinAccountAgeCog(commands.Cog, name="change min account age command"):
         self.bot = bot
 
 # ------------------------------------------------------ #  
-
+# TODO need to convert this cog to slash commands
     @commands.command(name = 'minaccountage', 
                         aliases= ["minage", "agarequired", "age"],
                         usage="<numberInSecond/false>",

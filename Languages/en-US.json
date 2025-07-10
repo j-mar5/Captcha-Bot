@@ -1,9 +1,9 @@
 {
     "global": {
         "BOT_CREATOR": "Captcha Bot",
-        "SUCCESS": "**SUCCESS**",
-        "ERROR": "**ERROR**",
-        "ERROR_OCCURED": "An error was occcured : `{0}`"
+        "SUCCESS": "**Success**",
+        "ERROR": "**Error**",
+        "ERROR_OCCURED": "An error has occcured : `{0}`"
     },
     "events": {
         "COMMAND_IN_COOLDOWN_DAY": "This command has a cooldown, please wait {0} day(s) before trying again.",
@@ -23,14 +23,20 @@
         "CAPTCHA_MESSAGE": "**YOU MUST PASS THE CAPTCHA TO ENTER THE SERVER:**\nPlease {0}, enter the captcha to get access to the whole server (only uppercase letters and numbers). You have 5 minutes to answer before an automated kick will occur.\nYou will be kicked if you fail the captcha or do not answer in time, but you may re-join using the same invite link to try again.",
         "MEMBER_PASSED_THE_CAPTCHA": "{0} passed the captcha.",
         "USER_INFORMATIONS": "**__User information:__**\n\n**Name:** {0}\n**Id:** {1}",
-        "DATE": "at {0}" ,
-        "MEMBER_FAILED_THE_CAPTCHA": "{0} failed the captcha.",
+        "DATE": "User joined the server at {0} UTC" ,
+        "MEMBER_FAILED_THE_CAPTCHA": "{0} failed the captcha. You have {1} attempts remaining.",
         "MEMBER_FAILED_THE_CAPTCHA_REASON": "Reason : You failed the captcha. You may re-join the server with the same invite link to try again.",
         "MEMBER_FAILED_THE_CAPTCHA_REASON_LOG": "**Reason :** They failed the captcha.\n\n**__User information:__**\n\n**Name:** {0}\n**Id:** {1}",
         "TIME_IS_OUT": "**CAPTCHA TIMEOUT**",
-        "USER_HAS_EXCEEDED_THE_RESPONSE_TIME_REASON": "Reason : You exceeded the captcha response time (120s). You can re-join the server using the same invite link to try again.",
-        "USER_HAS_EXCEEDED_THE_RESPONSE_TIME": "{0} has exceeded the response time (120s).",
-        "USER_HAS_EXCEEDED_THE_RESPONSE_TIME_LOG": "**Reason :** They exceeded the captcha response time (120s).\n\n**__User information:__**\n\n**Name:** {0}\n**Id:** {1}"
+        "USER_HAS_EXCEEDED_THE_RESPONSE_TIME_REASON": "Reason : You exceeded the captcha response time (5 minutes). You can re-join the server using the same invite link to try again.",
+        "USER_HAS_EXCEEDED_THE_RESPONSE_TIME": "{0} has exceeded the response time (5 minutes).",
+        "USER_HAS_EXCEEDED_THE_RESPONSE_TIME_LOG": "**Reason :** They exceeded the captcha response time (5 minutes).\n\n**__User information:__**\n\n**Name:** {0}\n**Id:** {1}",
+        "REVERIFY_USER_HAS_EXCEEDED_THE_RESPONSE_TIME_REASON": "Reason : You exceeded the captcha response time (24 hours). You can re-join the server using the same invite link to try again.",
+        "REVERIFY_USER_HAS_EXCEEDED_THE_RESPONSE_TIME": "{0} has exceeded the reverify response time (24 hours).",
+        "REVERIFY_USER_HAS_EXCEEDED_THE_RESPONSE_TIME_LOG": "**Reason :** They exceeded the reverify captcha response time (24 hours).\n\n**__User information:__**\n\n**Name:** {0}\n**Id:** {1}"
+    },
+    "reVerify": {
+        "REVERIFICATION_MESSAGE": "**Please read ASAP!!**\n {0}, server staff require you to verify you are human. Please solve the captcha to regain access to the whole server (only uppercase letters and numbers). You have 24 hours to answer before an automated kick will occur.\nYou will be kicked if you fail the captcha or do not answer in time, but you may re-join using any server invite link."
     },
     "onMessage": {
         "USER_HAS_SENT_NUDITY": "**{0} has sent an explict image.**",
@@ -102,7 +108,11 @@
         "LOG_CHANNEL_ENABLED": "**LOG CHANNEL WAS ENABLED**",
         "LOG_CHANNEL_ENABLED_DESCRIPTION": "The log channel was enabled.",
         "LOG_CHANNEL_DISABLED": "**LOG CHANNEL WAS DISABLED**",
-        "LOG_CHANNEL_DISABLED_DESCRIPTION": "The log channel was disabled."
+        "LOG_CHANNEL_DISABLED_DESCRIPTION": "The log channel was disabled.",
+        "LOG_CHANNEL_WRONG_TYPE": "**INVALID CHANNEL TYPE**",
+        "LOG_CHANNEL_WRONG_TYPE_DESCRIPTION": "The log channel can only be a text channel. Please try again with a text channel selected.",
+        "LOG_CHANNEL_MISSING_PERMISSIONS": "**MISSING PERMISSIONS**",
+        "LOG_CHANNEL_MISSING_PERMISSIONS_DESCRIPTION": "The bot does not have permissions to send messages and embed links in the channel you selected. Please check the permissions and try again."
     },
     "minAccountAge": {
         "MINIMUM_ACCOUNT_AGE_ENABLED": "**MINIMUM ACCOUNT AGE WAS ENABLED**",
@@ -137,7 +147,10 @@
         "ANTI_NUDITY": "**ANTI NUDITY** - `({0}antinudity <true/false>)`",
         "ANTI_NUDITY_DESCRIPTION": "Anti nudity image enabled: **{0}**",
         "ANTI_PROFANITY": "**ANTI PROFANITY** - `({0}antiprofanity <true/false>)`",
-        "ANTI_PROFANITY_DESCRIPTION": "Anti profanity enabled: **{0}**"
+        "ANTI_PROFANITY_DESCRIPTION": "Anti profanity enabled: **{0}**",
+        "SETUP_CHANNEL_CHECK_FAILURE": "Captcha channel was not found. Please reconfigure the captcha channel or /captcha setup again.",
+        "SETUP_ROLE_CHECK_FAILURE": "Verification role was not found. Please reconfigure the captcha role or /captcha setup again.",
+        "SETUP_POST_ROLE_CHECK_FAILURE": "Role to be given after captcha was not found. Please reconfigure the role after captcha or /captcha setup again."
     },
     "setup": {
         "DO_YOU_WANT_TO_SET_UP_THE_CAPTCHA_PROTECTION": "**ARE YOU SURE YOU WANT TO SET UP THE CAPTCHA PROTECTION ?**",
@@ -147,12 +160,17 @@
         "CAPTCHA_WAS_SET_UP_WITH_SUCCESS": "**CAPTCHA WAS SET UP SUCCESSFULLY**",
         "CAPTCHA_WAS_SET_UP_WITH_SUCCESS_DESCRIPTION": "The captcha was set up successfully.",
         "CHANNEL_ACCESS_WARNING": "WARNING: Missing Permissions",
-        "CHANNEL_ACCESS_WARNING_DESCRIPTION": "At least one channel was skipped due to missing permissions. Please check the channel permissions to ensure that all non-verification channels are denied read access to the unverified role.",
+        "CHANNEL_ACCESS_WARNING_DESCRIPTION": "Could not set permissions for at least one channel due to missing permissions. Please check the channel permissions to deny read access to the temporary role (default is 'unverified'). Affected channels: `{0}`",
+        "TEMPORARY_ROLE_CREATE_ERROR_DESCRIPTION": "Unable to create a temporary role. Please ensure the bot has the `Manage Roles` permission, or specify an existing role for the temporary role.",
+        "TEMPORARY_CHANNEL_CREATE_ERROR_DESCRIPTION": "Unable to create a channel necessary for the captcha operation. Please ensure the bot has the `Manage Channels` permission, or specify existing channels for the captcha process.",
+        "TEMPORARY_CHANNEL_SELECT_ERROR_DESCRIPTION": "The selected verification channel has incorrect permissions. The bot must have permissions to `View Channel`, `Send Messages`, `Embed Links`, and `Manage Messages`.",
+        "LOG_CHANNEL_SELECT_ERROR_DESCRIPTION": "The selected log channel has incorrect permissions. The bot must have permissions to `View Channel`, `Send Messages`, and `Embed Links`.",
+        "TEMPORARY_ROLE_SELECT_ERROR_DESCRIPTION": "Unable to find the temporary role specified. Please verify the role and try again.",
         "TIME_IS_OUT": "**CONFIRMATION TIMEOUT**",
         "USER_HAS_EXCEEDED_THE_RESPONSE_TIME": "{0} has exceeded the response time (30s).",
         "DELETION_OF_THE_CAPTCHA_PROETECTION": "Deletion of captcha protection...",
         "CAPTCHA_WAS_DELETED_WITH_SUCCESS": "CAPTCHA WAS DELETED SUCCESSFULLY",
-        "CAPTCHA_WAS_DELETED_WITH_SUCCESS_DESCRIPTION": "The captcha was deleted successfully.",
+        "CAPTCHA_WAS_DELETED_WITH_SUCCESS_DESCRIPTION": "Captcha protection was deactivated successfully.",
         "CAPTCHA_DELETION_ERROR": "**CAPTCHA DELETION FAILED**",
         "CAPTCHA_DELETION_ERROR_DESCRIPTION": "**Error(s) detected during the deletion of the ** `{0}`.",
         "INVALID_ARGUMENT": "The setup argument must be on or off\nFollow the example: `{prefix}setup <on/off>`"
