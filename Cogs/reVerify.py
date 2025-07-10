@@ -28,13 +28,15 @@ class ReVerifyCog(commands.Cog, name="re-verify"):
     @app_commands.guild_only()
     @app_commands.default_permissions(kick_members=True)
     async def reverify(self, interaction: discord.Interaction, member: discord.Member):
-        await interaction.response.defer(ephemeral=True)
+        
         if (member.bot):
-            await interaction.edit_original_response(content="Can't verify a bot!")
-            return
+           return await interaction.response.send_message(content="Can't verify a bot!", ephemeral=True)
+            
 
         # Read configuration.json
         data = getConfig(member.guild.id)
+        if data["captcha"] is False:
+            return await interaction.response.send_message(content="Captcha protection is disabled. Please enable it before reverifying a member.")
         logChannel = data["logChannel"]
         captchaChannel = self.bot.get_channel(data["captchaChannel"])
 
@@ -46,7 +48,7 @@ class ReVerifyCog(commands.Cog, name="re-verify"):
             logger.info("Giving new member the unverified role")
             getrole = get(member.guild.roles, id = data["temporaryRole"])
             await member.add_roles(getrole)
-            await interaction.edit_original_response(content=f"Prompted {member.display_name} ({member.global_name}) for a re-captcha!")
+            await interaction.response.send_message(content=f"Prompted {member.display_name} ({member.global_name}) for a re-captcha!")
 
             # 3 chances to guess correctly
             remaining_attempts = 3
