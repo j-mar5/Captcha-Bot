@@ -62,7 +62,7 @@ async def generateCaptcha(member: discord.Member, text: str):
     image = Image.open(f"{folderPath}/output/{captchaName}")
     
     # Add line
-    width = random.randrange(10, 15)
+    width = random.randrange(5, 10)
     co1 = random.randrange(0, 75)
     co3 = random.randrange(275, 350)
     co2 = random.randrange(20, 50)
@@ -70,14 +70,14 @@ async def generateCaptcha(member: discord.Member, text: str):
     draw = ImageDraw.Draw(image)
     draw.line([(co1, co2), (co3, co4)], width= width, fill= (90, 90, 90))
 
-    # Add another
-    width = random.randrange(12, 15)
-    co1 = random.randrange(0, 75)
-    co3 = random.randrange(275, 350)
-    co2 = random.randrange(60, 90)
-    co4 = random.randrange(60, 90)
-    draw = ImageDraw.Draw(image)
-    draw.line([(co1, co2), (co3, co4)], width= width, fill= (90, 90, 90))
+    # # Add another
+    # width = random.randrange(12, 15)
+    # co1 = random.randrange(0, 75)
+    # co3 = random.randrange(275, 350)
+    # co2 = random.randrange(60, 90)
+    # co4 = random.randrange(60, 90)
+    # draw = ImageDraw.Draw(image)
+    # draw.line([(co1, co2), (co3, co4)], width= width, fill= (90, 90, 90))
     
     # Add noise
     noisePercentage = 0.60 # 60%
